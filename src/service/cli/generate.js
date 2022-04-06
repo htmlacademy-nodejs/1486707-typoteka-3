@@ -73,7 +73,7 @@ const generateArticles = (count) => {
 };
 
 module.exports = {
-  name: `generate`,
+  name: `--generate`,
   run(args) {
     const [count] = args;
 

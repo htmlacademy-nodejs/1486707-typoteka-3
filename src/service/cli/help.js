@@ -10,7 +10,7 @@ service.js <command>
 --generate <count>    формирует файл mocks.json`;
 
 module.exports = {
-  name: `help`,
+  name: `--help`,
   run() {
     console.info(HELP_MESSAGE);
   }
