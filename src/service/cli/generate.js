@@ -19,7 +19,7 @@ const FILE_CATEGORIES_PATH = `./data/categories.txt`;
 const readContent = async (filePath) => {
   try {
     const content = await fs.readFile(filePath, `utf-8`);
-    return content.trim().split(`\r\n`);
+    return content.trim().split(`\n`);
   } catch (err) {
     console.error(chalk.red(err));
     return [];
