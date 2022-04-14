@@ -28,6 +28,7 @@ const sendResponse = (res, statusCode, message) => {
 
 const onClientConnect = async (req, res) => {
   const notFoundMessageText = `Not found`;
+  const errorMessageText = `Internal error`;
 
   switch (req.url) {
     case `/`:
@@ -37,7 +38,7 @@ const onClientConnect = async (req, res) => {
         const titles = mocks.map((post) => `<li>${post.title}</li>`).join(``);
         sendResponse(res, HttpCode.OK, `<ul>${titles}</ul>`);
       } catch (err) {
-        sendResponse(res, HttpCode.NOT_FOUND, notFoundMessageText);
+        sendResponse(res, HttpCode.INTERNAL_SERVER_ERROR, errorMessageText);
       }
       break;
 
