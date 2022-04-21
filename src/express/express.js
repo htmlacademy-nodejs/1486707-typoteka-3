@@ -17,6 +17,7 @@ app.use(`/my`, myRoutes);
 app.use(`/`, mainRoutes);
 
 app.use(express.static(path.resolve(__dirname, PUBLIC_DIR)));
+
 app.set(`views`, path.resolve(__dirname, `templates`));
 app.set(`view engine`, `pug`);
 
