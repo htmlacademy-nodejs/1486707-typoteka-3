@@ -1,65 +1,37 @@
 'use strict';
 
-const chalk = require(`chalk`);
 const fs = require(`fs`).promises;
-const http = require(`http`);
+const express = require(`express`);
 
 const {HttpCode} = require(`../../constants`);
 
-const DEFAULT_PORT = 3000;
 const FILENAME = `mocks.json`;
+const DEFAULT_PORT = 3000;
 
-const sendResponse = (res, statusCode, message) => {
-  const template = `
-  <!Doctype html>
-    <html lang="ru">
-    <head>
-      <title>With love from Node</title>
-    </head>
-    <body>${message}</body>
-  </html>`.trim();
+const app = express();
 
-  res.writeHead(statusCode, {
-    'Content-Type': `text/html; charset=UTF-8`,
-  });
+app.use(express.json());
 
-  res.end(template);
-};
-
-const onClientConnect = async (req, res) => {
-  const notFoundMessageText = `Not found`;
-
-  switch (req.url) {
-    case `/`:
-      try {
-        const fileContent = await fs.readFile(FILENAME);
-        const mocks = JSON.parse(fileContent);
-        const titles = mocks.map((post) => `<li>${post.title}</li>`).join(``);
-        sendResponse(res, HttpCode.OK, `<ul>${titles}</ul>`);
-      } catch (err) {
-        sendResponse(res, HttpCode.NOT_FOUND, notFoundMessageText);
-      }
-      break;
-
-    default:
-      sendResponse(res, HttpCode.NOT_FOUND, notFoundMessageText);
-      break;
+app.get(`/posts`, async (req, res) => {
+  try {
+    const fileContent = await fs.readFile(FILENAME);
+    const mocks = JSON.parse(fileContent);
+    res.json(mocks);
+  } catch (_err) {
+    res.send([]);
   }
-};
+});
+
+app.use((req, res) => res
+  .status(HttpCode.NOT_FOUND)
+  .send(`Not Found`)
+);
 
 module.exports = {
   name: `--server`,
   run(args) {
     const [customPort] = args;
     const port = Number.parseInt(customPort, 10) || DEFAULT_PORT;
-
-    http.createServer(onClientConnect)
-    .listen(port)
-    .on(`listening`, () => {
-      console.info(chalk.green(`Ожидаю соединений на ${port}`));
-    })
-    .on(`error`, ({message}) => {
-      console.error(chalk.red(`Ошибка при создании сервера: ${message}`));
-    });
+    app.listen(port);
   }
 };
