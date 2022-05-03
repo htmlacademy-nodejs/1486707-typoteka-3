@@ -4,7 +4,8 @@
   "description": "Типотека",
   "main": ".src/service/service.js",
   "scripts": {
-    "test": "npm run eslint",
+    "test": "npm run eslint && npm run jest",
+    "jest": "jest",
     "eslint": "eslint --ext .js src/",
     "start": "node ./src/service/service.js",
     "start.dev": "nodemon ./src/service/service.js",
@@ -25,6 +26,7 @@
     "eslint-config-htmlacademy": "0.6.0",
     "jest": "28.0.0",
     "nodemon": "2.0.15",
+    "pino-pretty": "7.5.1",
     "supertest": "6.2.2"
   },
   "dependencies": {
@@ -32,6 +34,7 @@
     "dayjs": "1.10.7",
     "express": "4.17.3",
     "nanoid": "3.2.0",
+    "pino": "6.14.0",
     "pug": "3.0.2"
   }
 }
