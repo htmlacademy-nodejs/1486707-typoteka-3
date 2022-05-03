@@ -6,10 +6,11 @@ class SearchService {
   }
 
   findAll(searchString) {
+    const searchStringWords = searchString.split(` `);
     const newArticles = [...this._articles];
     const filteredArticles = newArticles.filter((article) => {
       const substrings = article.title.split(` `);
-      return substrings.includes(searchString);
+      return searchStringWords.every((searchWord) => substrings.includes(searchWord));
     });
     return filteredArticles;
   }
