@@ -32,15 +32,6 @@ describe(`API returns a title based on the search query`, () => {
 });
 
 describe(`API returns error status when something is wrong`, () => {
-  test(`API returns code 404 if nothing's found`, () => {
-    return request(app)
-    .get(`/search`)
-    .query({
-      query: `Invalid title`
-    })
-    .expect(HttpCode.NOT_FOUND);
-  });
-
   test(`API returns 400 when query string is absent`, () => {
     return request(app)
       .get(`/search`)

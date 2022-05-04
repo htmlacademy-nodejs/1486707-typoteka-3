@@ -57,6 +57,14 @@ module.exports = (app, articleService, commentsService) => {
     return res.status(HttpCode.OK).json(comments);
   });
 
+  route.get(`/:articleId/comments/:commentId`, articleExists(articleService), (req, res) => {
+    const {article} = res.locals;
+    const {commentId} = req.params;
+    const comment = commentsService.findOne(article, commentId);
+
+    return res.status(HttpCode.OK).json(comment);
+  });
+
   route.post(`/:articleId/comments`, [articleExists(articleService), commentValidator], (req, res) => {
     const {article} = res.locals;
     const comment = commentsService.create(article, req.body);

@@ -148,3 +148,31 @@ describe(`API returns errors when expected`, () => {
   });
 });
 
+describe(`API correctly deletes an article`, () => {
+  const app = createAPI();
+  let response;
+
+  beforeAll(async () => {
+    response = await request(app)
+    .delete(`/articles/jDuz1E`);
+  });
+
+  test(`Status code 200`, () => {
+    return expect(response.statusCode).toBe(HttpCode.OK);
+  });
+  test(`Returns deleted article`, () => {
+    return expect(response.body.id).toBe(`jDuz1E`);
+  });
+  test(`Article count is 4 now`, () => {
+    return request(app)
+    .get(`/articles`)
+    .expect((res) => expect(res.body.length).toBe(4));
+  });
+  test(`API refuses to delete non-existent article`, () => {
+    return request(app)
+    .delete(`/articles/invalidId`)
+    .expect(HttpCode.NOT_FOUND);
+  });
+});
+
+
