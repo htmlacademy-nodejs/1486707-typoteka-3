@@ -1,14 +1,16 @@
 'use strict';
 
 const express = require(`express`);
-const routes = require(`../api`);
+const {Router} = require(`express`);
 
+const getApiRoutes = require(`../api`);
 const {HttpCode, API_PREFIX} = require(`../../constants`);
 const {getMockData} = require(`../lib/get-mock-data`);
 
 const DEFAULT_PORT = 3000;
 
 const app = express();
+const apiRoutes = new Router();
 
 app.use(express.json());
 
@@ -21,7 +23,11 @@ app.get(`/posts`, async (req, res) => {
   }
 });
 
-app.use(API_PREFIX, routes);
+app.use(async (req, res, next) => {
+  await getApiRoutes(apiRoutes, next);
+});
+
+app.use(API_PREFIX, apiRoutes);
 
 app.use((req, res) => res
   .status(HttpCode.NOT_FOUND)
