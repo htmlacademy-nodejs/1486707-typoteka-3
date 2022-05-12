@@ -8,30 +8,39 @@ const DataService = require(`../data-service/SearchService`);
 const {mockData} = require(`../../test-mock-data`);
 const {HttpCode} = require(`../../constants`);
 
-const app = express();
-app.use(express.json());
-search(app, new DataService(mockData));
+const createAPI = () => {
+  const app = express();
+  const cloneData = JSON.parse(JSON.stringify(mockData));
+  app.use(express.json());
+  search(app, new DataService(cloneData));
+  return app;
+};
 
 describe(`API returns a title based on the search query`, () => {
-  let response;
+  const app = createAPI();
 
-  beforeAll(async () => {
-    response = await request(app)
-        .get(`/search`)
-        .query({
-          query: `Как начать программировать`
-        });
-  });
-
-  test(`Status code 200`, () => {
+  test(`Status code 200`, async () => {
+    const response = await request(app)
+    .get(`/search`)
+    .query({
+      query: `Как начать программировать`
+    });
     return expect(response.statusCode).toBe(HttpCode.OK);
   });
-  test(`2 articles found`, () => {
+
+  test(`2 articles found`, async () => {
+    const response = await request(app)
+    .get(`/search`)
+    .query({
+      query: `Как начать программировать`
+    });
     return expect(response.body.length).toBe(2);
   });
 });
 
 describe(`API returns error status when something is wrong`, () => {
+  const app = createAPI();
+
   test(`API returns 400 when query string is absent`, () => {
     return request(app)
       .get(`/search`)

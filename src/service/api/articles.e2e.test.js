@@ -17,8 +17,8 @@ const newArticle = {
   comments: []
 };
 
-const createAPI = () => {
-  const app = express();
+const createAPI = (app) => {
+  app = express();
   const cloneData = JSON.parse(JSON.stringify(mockData));
   app.use(express.json());
   articles(app, new ArticlesService(cloneData), new CommentsService());
@@ -28,20 +28,18 @@ const createAPI = () => {
 describe(`API returns a list of all articles`, () => {
   const app = createAPI();
 
-  let response;
-
-  beforeAll(async () => {
-    response = await request(app)
-         .get(`/articles`);
-  });
-
-  test(`Status code 200`, () => {
+  test(`Status code 200`, async () => {
+    const response = await request(app).get(`/articles`);
     return expect(response.statusCode).toBe(HttpCode.OK);
   });
-  test(`Returns a list of 5 articles`, () => {
+
+  test(`Returns a list of 5 articles`, async () => {
+    const response = await request(app).get(`/articles`);
     return expect(response.body.length).toBe(5);
   });
-  test(`First article's id is "jDuz1E"`, () => {
+
+  test(`First article's id is "jDuz1E"`, async () => {
+    const response = await request(app).get(`/articles`);
     return expect(response.body[0].id).toBe(`jDuz1E`);
   });
 });
@@ -49,28 +47,25 @@ describe(`API returns a list of all articles`, () => {
 describe(`API returns an article with given id`, () => {
   const app = createAPI();
 
-  let response;
-
-  beforeAll(async () => {
-    response = await request(app)
-           .get(`/articles/jDuz1E`);
-  });
-
-  test(`Status code 200`, () => {
+  test(`Status code 200`, async () => {
+    const response = await request(app).get(`/articles/jDuz1E`);
     return expect(response.statusCode).toBe(HttpCode.OK);
   });
-  test(`Article title is "Как собрать камни бесконечности"`, () => {
+
+  test(`Article title is "Как собрать камни бесконечности"`, async () => {
+    const response = await request(app).get(`/articles/jDuz1E`);
     return expect(response.body.title).toBe(`Как собрать камни бесконечности`);
   });
 });
 
 describe(`API creates an article if the data is valid`, () => {
-  const app = createAPI();
-
+  let app1;
+  let app3;
   let response;
 
   beforeAll(async () => {
-    response = await request(app)
+    app3 = await createAPI(app1);
+    response = await request(app3)
            .post(`/articles`)
            .send(newArticle);
   });
@@ -82,7 +77,7 @@ describe(`API creates an article if the data is valid`, () => {
     return expect(response.body).toEqual(expect.objectContaining(newArticle));
   });
   test(`Articles count is changed`, () => {
-    return request(app)
+    return request(app3)
       .get(`/articles`)
       .expect((res) => expect(res.body.length).toBe(6));
   });
@@ -95,6 +90,7 @@ describe(`API refuses to create an invalid data article`, () => {
     for (const key of Object.keys(newArticle)) {
       const badArticle = {...newArticle};
       delete badArticle[key];
+
       await request(app)
             .post(`/articles`)
             .send(badArticle)
@@ -149,11 +145,13 @@ describe(`API returns errors when expected`, () => {
 });
 
 describe(`API correctly deletes an article`, () => {
-  const app = createAPI();
+  let app2;
+  let app4;
   let response;
 
   beforeAll(async () => {
-    response = await request(app)
+    app2 = createAPI(app4);
+    response = await request(app2)
     .delete(`/articles/jDuz1E`);
   });
 
@@ -163,13 +161,13 @@ describe(`API correctly deletes an article`, () => {
   test(`Returns deleted article`, () => {
     return expect(response.body.id).toBe(`jDuz1E`);
   });
-  test(`Article count is 4 now`, () => {
-    return request(app)
+  test(`Article count is 4 now`, async () => {
+    return await request(app2)
     .get(`/articles`)
     .expect((res) => expect(res.body.length).toBe(4));
   });
-  test(`API refuses to delete non-existent article`, () => {
-    return request(app)
+  test(`API refuses to delete non-existent article`, async () => {
+    return await request(app2)
     .delete(`/articles/invalidId`)
     .expect(HttpCode.NOT_FOUND);
   });
