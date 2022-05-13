@@ -23,13 +23,25 @@ class API {
     return this._load(`/articles`);
   }
 
-  async getComments() {
+  getArticle(id) {
+    return this._load(`/articles/${id}`);
+  }
+
+  async getAllComments() {
     const articles = await this._load(`/articles`);
 
     const commentsData = articles.reduce((comments, article) => {
       return [...comments, ...article.comments];
     }, []);
     return commentsData;
+  }
+
+  getComments(id) {
+    return this._load(`/articles/${id}/comments`);
+  }
+
+  getCategories() {
+    return this._load(`/categories`);
   }
 
   search(query) {

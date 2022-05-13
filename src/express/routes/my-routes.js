@@ -9,7 +9,7 @@ myRouter.get(`/`, async (req, res) => {
   res.render(`my.pug`, {articles});
 });
 myRouter.get(`/comments`, async (req, res) => {
-  const comments = await api.getComments();
+  const comments = await api.getAllComments();
   res.render(`comments.pug`, {comments});
 });
 myRouter.get(`/categories`, (req, res) => res.render(`all-categories`));
