@@ -16,15 +16,19 @@ const createAPI = () => {
   return app;
 };
 
-describe(`API returns category list`, () => {
-  const app = createAPI();
+describe(`Category REST API`, () => {
+  describe(`API returns category list`, () => {
+    const app = createAPI();
 
-  test(`Status code 200`, async () => {
-    const response = await request(app).get(`/categories`);
-    return expect(response.statusCode).toBe(HttpCode.OK);
+    test(`Status code 200`, async () => {
+      const response = await request(app).get(`/categories`);
+      return expect(response.statusCode).toBe(HttpCode.OK);
+    });
+    test(`Returns list of 9 titles`, async () => {
+      const response = await request(app).get(`/categories`);
+      return expect(response.body.length).toBe(9);
+    });
   });
-  test(`Returns list of 9 titles`, async () => {
-    const response = await request(app).get(`/categories`);
-    return expect(response.body.length).toBe(9);
-  });
+
 });
+

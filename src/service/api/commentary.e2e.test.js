@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require(`express`);
-const request = require(`supertest`);
+const supertest = require(`supertest`);
 
 const articles = require(`./articles`);
 const ArticlesService = require(`../data-service/ArticlesService`);
@@ -25,114 +25,118 @@ const createAPI = () => {
   return app;
 };
 
-describe(`API returns a list of all comments`, () => {
-  const app = createAPI();
+describe(`Commentary REST API`, () => {
+  let server;
+  let request;
 
-  test(`Status code 200`, async () => {
-    const response = await request(app).get(`/articles/jDuz1E/comments`);
-
-    return expect(response.statusCode).toBe(HttpCode.OK);
+  beforeEach((done) => {
+    const api = createAPI();
+    server = api.listen(done);
+    request = supertest.agent(server);
   });
 
-  test(`Returns a list of 3 articles`, async () => {
-    const response = await request(app).get(`/articles/jDuz1E/comments`);
-
-    return expect(response.body.length).toBe(3);
+  afterEach((done) => {
+    server.close(done);
   });
 
-  test(`First comment's id is "0tuMqv"`, async () => {
-    const response = await request(app).get(`/articles/jDuz1E/comments`);
+  describe(`API returns a list of all comments`, () => {
+    test(`Status code 200`, async () => {
+      const response = await request.get(`/articles/jDuz1E/comments`);
+      return expect(response.statusCode).toBe(HttpCode.OK);
+    });
 
-    return expect(response.body[0].id).toBe(`0tuMqv`);
-  });
-});
+    test(`Returns a list of 3 articles`, async () => {
+      const response = await request.get(`/articles/jDuz1E/comments`);
+      return expect(response.body.length).toBe(3);
+    });
 
-describe(`API returns a comment with given id`, () => {
-  const app = createAPI();
-
-  test(`Status code 200`, async () => {
-    const response = await request(app).get(`/articles/jDuz1E/comments/0tuMqv`);
-
-    return expect(response.statusCode).toBe(HttpCode.OK);
-  });
-
-  test(`Comment text includes "Мне кажется или я уже читал это где-то?"`, async () => {
-    const response = await request(app).get(`/articles/jDuz1E/comments/0tuMqv`);
-
-    return expect(response.body.text).toMatch(`Мне кажется или я уже читал это где-то?`);
-  });
-});
-
-describe(`API creates a comment if the data is valid`, () => {
-  let app;
-  let response;
-
-  beforeAll(async () => {
-    app = await createAPI();
-    response = await request(app)
-           .post(`/articles/jDuz1E/comments`)
-           .send(newComment);
+    test(`First comment's id is "0tuMqv"`, async () => {
+      const response = await request.get(`/articles/jDuz1E/comments`);
+      return expect(response.body[0].id).toBe(`0tuMqv`);
+    });
   });
 
-  test(`Status code 201`, () => {
-    return expect(response.statusCode).toBe(HttpCode.CREATED);
+  describe(`API returns a comment with given id`, () => {
+    test(`Status code 200`, async () => {
+      const response = await request.get(`/articles/jDuz1E/comments/0tuMqv`);
+      return expect(response.statusCode).toBe(HttpCode.OK);
+    });
+
+    test(`Comment text includes "Мне кажется или я уже читал это где-то?"`, async () => {
+      const response = await request.get(`/articles/jDuz1E/comments/0tuMqv`);
+      return expect(response.body.text).toMatch(`Мне кажется или я уже читал это где-то?`);
+    });
   });
 
-  test(`Returns the created comment`, () => {
-    return expect(response.body).toEqual(expect.objectContaining(newComment));
+  describe(`API creates a comment if the data is valid`, () => {
+    test(`Status code 201`, async () => {
+      const response = await request
+             .post(`/articles/jDuz1E/comments`)
+             .send(newComment);
+      return expect(response.statusCode).toBe(HttpCode.CREATED);
+    });
+
+    test(`Returns the created comment`, async () => {
+      const response = await request
+             .post(`/articles/jDuz1E/comments`)
+             .send(newComment);
+      return expect(response.body).toEqual(expect.objectContaining(newComment));
+    });
+
+    test(`Comments count is changed`, async () => {
+      const getBodyLength = (res) => expect(res.body.length).toBe(4);
+      await request
+             .post(`/articles/jDuz1E/comments`)
+             .send(newComment);
+      return request
+        .get(`/articles/jDuz1E/comments`)
+        .expect((res) => getBodyLength(res));
+    });
   });
 
-  test(`Comments count is changed`, () => {
-    return request(app)
+  describe(`API refuses to create an invalid data comment`, () => {
+    test(`Status Code is 400 without any of the required property`, async () => {
+      for (const key of Object.keys(newComment)) {
+        const badComment = {...newComment};
+        delete badComment[key];
+        await request
+          .post(`/articles`)
+          .send(badComment)
+          .expect(HttpCode.BAD_REQUEST);
+      }
+    });
+  });
+
+  describe(`API correctly deletes a comment`, () => {
+    test(`Status code 200`, async () => {
+      const response = await request
+      .delete(`/articles/jDuz1E/comments/0tuMqv`);
+      return expect(response.statusCode).toBe(HttpCode.OK);
+    });
+
+    test(`Returns deleted article`, async () => {
+      const response = await request
+      .delete(`/articles/jDuz1E/comments/0tuMqv`);
+      return expect(response.body.id).toBe(`0tuMqv`);
+    });
+
+    test(`Comments count is 2 now`, async () => {
+      await request
+      .delete(`/articles/jDuz1E/comments/0tuMqv`);
+      return request
       .get(`/articles/jDuz1E/comments`)
-      .expect((res) => expect(res.body.length).toBe(4));
-  });
-});
+      .expect((res) => expect(res.body.length).toBe(2));
+    });
 
-describe(`API refuses to create an invalid data comment`, () => {
-  const app = createAPI();
-
-  test(`Status Code is 400 without any of the required property`, async () => {
-    for (const key of Object.keys(newComment)) {
-      const badComment = {...newComment};
-      delete badComment[key];
-      await request(app)
-        .post(`/articles`)
-        .send(badComment)
-        .expect(HttpCode.BAD_REQUEST);
-    }
-  });
-});
-
-describe(`API correctly deletes a comment`, () => {
-  let app;
-  let response;
-
-  beforeAll(async () => {
-    app = await createAPI();
-    response = await request(app)
-    .delete(`/articles/jDuz1E/comments/0tuMqv`);
+    test(`API refuses to delete non-existent comment`, async () => {
+      await request
+      .delete(`/articles/jDuz1E/comments/0tuMqv`);
+      return request
+      .delete(`/articles/jDuz1E/comments/invalidId`)
+      .expect(HttpCode.NOT_FOUND);
+    });
   });
 
-  test(`Status code 200`, () => {
-    return expect(response.statusCode).toBe(HttpCode.OK);
-  });
-
-  test(`Returns deleted article`, () => {
-    return expect(response.body.id).toBe(`0tuMqv`);
-  });
-
-  test(`Comments count is 2 now`, async () => {
-    return request(app)
-    .get(`/articles/jDuz1E/comments`)
-    .expect((res) => expect(res.body.length).toBe(2));
-  });
-
-  test(`API refuses to delete non-existent comment`, () => {
-    return request(app)
-    .delete(`/articles/jDuz1E/comments/invalidId`)
-    .expect(HttpCode.NOT_FOUND);
-  });
 });
 
 
