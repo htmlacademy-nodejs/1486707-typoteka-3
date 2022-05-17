@@ -8,22 +8,27 @@ const DataService = require(`../data-service/CategoriesService`);
 const {mockData} = require(`../../test-mock-data`);
 const {HttpCode} = require(`../../constants`);
 
-const app = express();
-app.use(express.json());
-category(app, new DataService(mockData));
+const createAPI = () => {
+  const app = express();
+  const cloneData = JSON.parse(JSON.stringify(mockData));
+  app.use(express.json());
+  category(app, new DataService(cloneData));
+  return app;
+};
 
-describe(`API returns category list`, () => {
-  let response;
+describe(`Category REST API`, () => {
+  describe(`API returns category list`, () => {
+    const app = createAPI();
 
-  beforeAll(async () => {
-    response = await request(app)
-            .get(`/categories`);
+    test(`Status code 200`, async () => {
+      const response = await request(app).get(`/categories`);
+      return expect(response.statusCode).toBe(HttpCode.OK);
+    });
+    test(`Returns list of 9 titles`, async () => {
+      const response = await request(app).get(`/categories`);
+      return expect(response.body.length).toBe(9);
+    });
   });
 
-  test(`Status code 200`, () => {
-    return expect(response.statusCode).toBe(HttpCode.OK);
-  });
-  test(`Returns list of 9 titles`, () => {
-    return expect(response.body.length).toBe(9);
-  });
 });
+

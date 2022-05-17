@@ -11,6 +11,7 @@ module.exports = (req, res, next) => {
 
   if (!keysExist) {
     res.status(HttpCode.BAD_REQUEST).send(`Bad request`);
+    return;
   }
 
   next();
