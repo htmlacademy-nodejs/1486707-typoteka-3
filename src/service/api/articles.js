@@ -7,9 +7,8 @@ const articleValidator = require(`../middlewares/articleValidator`);
 const commentExists = require(`../middlewares/commentExists`);
 const commentValidator = require(`../middlewares/commentValidator`);
 
-const route = new Router();
-
 module.exports = (app, articleService, commentsService) => {
+  const route = new Router();
   app.use(`/articles`, route);
 
   route.get(`/`, async (req, res) => {
@@ -55,6 +54,14 @@ module.exports = (app, articleService, commentsService) => {
     const comments = commentsService.findAll(article);
 
     return res.status(HttpCode.OK).json(comments);
+  });
+
+  route.get(`/:articleId/comments/:commentId`, articleExists(articleService), (req, res) => {
+    const {article} = res.locals;
+    const {commentId} = req.params;
+    const comment = commentsService.findOne(article, commentId);
+
+    return res.status(HttpCode.OK).json(comment);
   });
 
   route.post(`/:articleId/comments`, [articleExists(articleService), commentValidator], (req, res) => {
