@@ -10,6 +10,14 @@ mainRouter.get(`/`, async (req, res) => {
 });
 mainRouter.get(`/register`, (req, res) => res.render(`sign-up.pug`));
 mainRouter.get(`/login`, (req, res) => res.render(`login.pug`));
-mainRouter.get(`/search`, (req, res) => res.render(`search.pug`));
+mainRouter.get(`/search`, async (req, res) => {
+  try {
+    const {query} = req.query;
+    const results = await api.search(query);
+    res.render(`search.pug`, {results});
+  } catch (error) {
+    res.render(`search.pug`, {results: []});
+  }
+});
 
 module.exports = mainRouter;
