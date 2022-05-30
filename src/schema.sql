@@ -1,31 +1,31 @@
 CREATE TABLE categories(
-    id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    name varchar(30) NOT NULL
+    id SERIAL PRIMARY KEY,
+    name text NOT NULL
 );
 
 CREATE TABLE users(
-    id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    email varchar(255) UNIQUE NOT NULL,
-    password_hash varchar(255) NOT NULL,
-    name varchar(255) NOT NULL,
-    surname varchar(255) NOT NULL,
-    avatar varchar(50) NOT NULL
+    id SERIAL PRIMARY KEY,
+    email text UNIQUE NOT NULL,
+    password_hash text NOT NULL,
+    name text NOT NULL,
+    surname text NOT NULL,
+    avatar text NOT NULL
 );
 
 CREATE TABLE articles(
-    id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    title varchar(250) NOT NULL,
-    article_text varchar(1000) NOT NULL,
-    announce varchar(250) NOT NULL,
-    picture varchar(50) NOT NULL,
+    id SERIAL PRIMARY KEY,
+    title text NOT NULL,
+    article_text text NOT NULL,
+    announce text NOT NULL,
+    picture text NOT NULL,
     created_at timestamp DEFAULT current_timestamp,
     user_id integer NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE TABLE comments(
-    id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    text varchar(250) NOT NULL,
+    id SERIAL PRIMARY KEY,
+    text text NOT NULL,
     created_at timestamp DEFAULT current_timestamp,
     article_id integer NOT NULL,
     user_id integer NOT NULL,
