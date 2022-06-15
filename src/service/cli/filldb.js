@@ -5,13 +5,17 @@ const chalk = require(`chalk`);
 const {nanoid} = require(`nanoid`);
 const {ExitCode, MAX_ID_LENGTH} = require(`../../constants`);
 
-const {getRandomInt, arrayShuffle, getRandomDate} = require(`../../utils`);
+const sequelize = require(`../lib/sequelize`);
+const defineModels = require(`../models`);
+const Aliase = require(`../models/aliase`);
+
+const {getRandomInt, arrayShuffle, getRandomDate, getRandomSubarray} = require(`../../utils`);
+const logger = require(`../lib/logger`);
 
 const DEFAULT_COUNT = 1;
 const MAX_COUNT = 1000;
 const MAX_COUNT_ERROR_MESSAGE = `Не больше ${MAX_COUNT} публикаций`;
 const MAX_TEXT_SENTENCES = 5;
-const FILE_NAME = `mocks.json`;
 const MAX_COMMENTS = 4;
 
 const FILE_ANNOUNCES_PATH = `./data/sentences.txt`;
@@ -44,19 +48,36 @@ const generateArticles = (count, titles, announces, categories, comments) => {
     announce: announces[getRandomInt(1, announces.length - 1)],
     text: arrayShuffle(announces).slice(1, MAX_TEXT_SENTENCES).join(` `),
     createdDate: getRandomDate(),
-    category: arrayShuffle(categories).slice(0, getRandomInt(1, categories.length - 1)),
+    categories: getRandomSubarray(categories),
     comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments)
   })
   );
 };
 
 module.exports = {
-  name: `--generate`,
+  name: `--filldb`,
   async run(args) {
+    try {
+      logger.info(`Trying to connect to the database...`);
+      await sequelize.authenticate();
+    } catch (err) {
+      logger.error(`An error occured: ${err.message}`);
+      process.exit(1);
+    }
+    logger.info(`Connection to the database established`);
+
+    const {Category, Article} = defineModels(sequelize);
+
+    await sequelize.sunc({force: true});
+
     const announces = await readContent(FILE_ANNOUNCES_PATH);
     const titles = await readContent(FILE_TITLES_PATH);
     const categories = await readContent(FILE_CATEGORIES_PATH);
     const comments = await readContent(FILE_COMMENTS_PATH);
+
+    const categoryModels = await Category.bulkCreate(
+        categories.map((item) => ({name: item}))
+    );
 
     const [count] = args;
 
@@ -66,13 +87,11 @@ module.exports = {
     }
 
     const countArticles = Number.parseInt(count, 10) || DEFAULT_COUNT;
-    const content = JSON.stringify(generateArticles(countArticles, titles, announces, categories, comments));
-
-    try {
-      await fs.writeFile(FILE_NAME, content);
-      console.info(chalk.green(`Operation success. File Created.`));
-    } catch (err) {
-      console.error(chalk.red(`Can't write data to file...`));
-    }
+    const articles = generateArticles(countArticles, titles, announces, categoryModels, comments);
+    const articlePromises = articles.map(async (article) => {
+      const articleModel = await Article.create(article, {include: [Aliase.COMMENTS]});
+      await articleModel.addCategories(article.categories);
+    });
+    await Promise.all(articlePromises);
   }
 };
