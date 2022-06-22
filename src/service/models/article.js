@@ -20,8 +20,8 @@ const define = (sequelize) => Article.init({
   }
 }, {
   sequelize,
-  modelName: `Offer`,
-  tableName: `offers`
+  modelName: `Article`,
+  tableName: `articles`
 });
 
 module.exports = define;

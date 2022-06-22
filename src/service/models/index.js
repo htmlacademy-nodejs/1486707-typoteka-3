@@ -8,23 +8,27 @@ const defineArticle = require(`./article`);
 
 const Aliase = require(`./aliase`);
 
-class ArticleCategory extends Model {}
+class ArticlesCategory extends Model {}
 
 const define = (sequelize) => {
   const Category = defineCategory(sequelize);
   const Comment = defineComment(sequelize);
   const Article = defineArticle(sequelize);
 
-  ArticleCategory.init({}, {sequelize});
+  ArticlesCategory.init({}, {
+    sequelize,
+    modelName: `ArticlesCategory`,
+    tableName: `articles_categories`
+  });
 
   Article.hasMany(Comment, {as: Aliase.COMMENTS, foreignKey: `articleId`, onDelete: `cascade`});
   Comment.belongsTo(Article, {foreignKey: `artilceId`});
 
-  Article.belongsToMany(Category, {through: `articleCategories`, as: Aliase.CATEGORIES});
-  Category.belongsToMany(Article, {through: `articleCategories`, as: Aliase.ARTICLES});
-  Category.hasMany(ArticleCategory, {as: Aliase.ARTICLE_CATEGORIES});
+  Article.belongsToMany(Category, {through: ArticlesCategory, as: Aliase.CATEGORIES});
+  Category.belongsToMany(Article, {through: ArticlesCategory, as: Aliase.ARTICLES});
+  Category.hasMany(ArticlesCategory, {as: Aliase.ARTICLE_CATEGORIES});
 
-  return {Category, Comment, Article, ArticleCategory};
+  return {Category, Comment, Article, ArticlesCategory};
 };
 
 module.exports = define;

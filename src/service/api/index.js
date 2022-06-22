@@ -14,9 +14,10 @@ const articles = require(`./articles`);
 const search = require(`./search`);
 const category = require(`./category`);
 
+defineModels(sequelize);
+
 const getApiRoutes = async (app, next) => {
 
-  defineModels(sequelize);
 
   category(app, new CategoriesService(sequelize));
   search(app, new SearchService(sequelize));
