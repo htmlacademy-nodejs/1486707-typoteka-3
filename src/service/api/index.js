@@ -6,18 +6,21 @@ const {
   CategoriesService,
   CommentsService
 } = require(`../data-service`);
-const {getMockData} = require(`../lib/get-mock-data`);
+
+const sequelize = require(`../lib/sequelize`);
+const defineModels = require(`../models`);
 
 const articles = require(`./articles`);
 const search = require(`./search`);
 const category = require(`./category`);
 
 const getApiRoutes = async (app, next) => {
-  const mockData = await getMockData();
 
-  category(app, new CategoriesService(mockData));
-  search(app, new SearchService(mockData));
-  articles(app, new ArticlesService(mockData), new CommentsService());
+  defineModels(sequelize);
+
+  category(app, new CategoriesService(sequelize));
+  search(app, new SearchService(sequelize));
+  articles(app, new ArticlesService(sequelize), new CommentsService(sequelize));
 
   next();
 };

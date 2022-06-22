@@ -9,7 +9,8 @@ service.js <command>
 Команды:
 --version:            выводит номер версии
 --help:               печатает этот текст
---filldb <count>      заполняет базу данных`;
+--filldb <count>:     заполняет базу данных
+--server:             запускает сервер`;
 
 module.exports = {
   name: `--help`,
