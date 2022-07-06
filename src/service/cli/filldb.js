@@ -2,17 +2,15 @@
 
 const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
-const {nanoid} = require(`nanoid`);
-const {ExitCode, MAX_ID_LENGTH} = require(`../../constants`);
+const {ExitCode} = require(`../../constants`);
 
 const sequelize = require(`../lib/sequelize`);
-const defineModels = require(`../models`);
-const Aliase = require(`../models/aliase`);
 
-const {getRandomInt, arrayShuffle, getRandomDate, getRandomSubarray} = require(`../../utils`);
-const logger = require(`../lib/logger`);
+const {getRandomInt, arrayShuffle, getRandomSubarray} = require(`../../utils`);
+const {getLogger} = require(`../lib/logger`);
+const initDatabase = require(`../lib/init-db`);
 
-const DEFAULT_COUNT = 1;
+const DEFAULT_COUNT = 5;
 const MAX_COUNT = 1000;
 const MAX_COUNT_ERROR_MESSAGE = `Не больше ${MAX_COUNT} публикаций`;
 const MAX_TEXT_SENTENCES = 5;
@@ -22,6 +20,8 @@ const FILE_ANNOUNCES_PATH = `./data/sentences.txt`;
 const FILE_TITLES_PATH = `./data/titles.txt`;
 const FILE_CATEGORIES_PATH = `./data/categories.txt`;
 const FILE_COMMENTS_PATH = `./data/comments.txt`;
+
+const logger = getLogger({});
 
 const readContent = async (filePath) => {
   try {
@@ -35,7 +35,6 @@ const readContent = async (filePath) => {
 
 const generateComments = (count, commentsData) => (
   Array(count).fill({}).map(() => ({
-    id: nanoid(MAX_ID_LENGTH),
     text: arrayShuffle(commentsData)
       .slice(0, getRandomInt(1, 3))
       .join(` `),
@@ -43,11 +42,9 @@ const generateComments = (count, commentsData) => (
 );
 const generateArticles = (count, titles, announces, categories, comments) => {
   return Array(count).fill({}).map(() => ({
-    id: nanoid(MAX_ID_LENGTH),
     title: titles[getRandomInt(1, titles.length - 1)],
     announce: announces[getRandomInt(1, announces.length - 1)],
-    text: arrayShuffle(announces).slice(1, MAX_TEXT_SENTENCES).join(` `),
-    createdDate: getRandomDate(),
+    articleText: arrayShuffle(announces).slice(1, MAX_TEXT_SENTENCES).join(` `),
     categories: getRandomSubarray(categories),
     comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments)
   })
@@ -66,19 +63,10 @@ module.exports = {
     }
     logger.info(`Connection to the database established`);
 
-    const {Category, Article} = defineModels(sequelize);
-
-    await sequelize.sunc({force: true});
-
     const announces = await readContent(FILE_ANNOUNCES_PATH);
     const titles = await readContent(FILE_TITLES_PATH);
     const categories = await readContent(FILE_CATEGORIES_PATH);
     const comments = await readContent(FILE_COMMENTS_PATH);
-
-    const categoryModels = await Category.bulkCreate(
-        categories.map((item) => ({name: item}))
-    );
-
     const [count] = args;
 
     if (count > MAX_COUNT) {
@@ -87,11 +75,8 @@ module.exports = {
     }
 
     const countArticles = Number.parseInt(count, 10) || DEFAULT_COUNT;
-    const articles = generateArticles(countArticles, titles, announces, categoryModels, comments);
-    const articlePromises = articles.map(async (article) => {
-      const articleModel = await Article.create(article, {include: [Aliase.COMMENTS]});
-      await articleModel.addCategories(article.categories);
-    });
-    await Promise.all(articlePromises);
+    const articles = generateArticles(countArticles, titles, announces, categories, comments);
+
+    return initDatabase(sequelize, {categories, articles});
   }
 };

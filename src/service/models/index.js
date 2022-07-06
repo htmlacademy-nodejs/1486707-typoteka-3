@@ -18,7 +18,7 @@ const define = (sequelize) => {
   ArticlesCategory.init({}, {
     sequelize,
     modelName: `ArticlesCategory`,
-    tableName: `articles_categories`
+    tableName: `articlesCategories`
   });
 
   Article.hasMany(Comment, {as: Aliase.COMMENTS, foreignKey: `articleId`, onDelete: `cascade`});
