@@ -11,13 +11,13 @@ class SearchService {
   async findAll(searchString) {
     const articles = await this._Article.findAll({
       where: {
-        titles: {
+        title: {
           [Op.substring]: searchString
         }
       },
       include: [Aliase.CATEGORIES],
       order: [
-        `createdAt`, `DESC`
+        [`createdAt`, `DESC`]
       ]
     });
 

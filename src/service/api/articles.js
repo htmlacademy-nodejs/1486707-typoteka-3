@@ -50,8 +50,8 @@ module.exports = (app, articleService, commentsService) => {
   });
 
   route.get(`/:articleId/comments`, articleExists(articleService), async (req, res) => {
-    const {article} = res.locals;
-    const comments = await commentsService.findAll(article);
+    const {articleId} = req.params;
+    const comments = await commentsService.findAll(articleId);
 
     return res.status(HttpCode.OK).json(comments);
   });
