@@ -5,6 +5,7 @@ block header-content
 
 block main-content 
     main
+        - var currentDate = Date.now().toString()
         section
             .popup.popup--new-publication.popup--anti
                 .new-publication
@@ -61,7 +62,7 @@ block main-content
                                 .form__field.form__field--publication-text
                                     label
                                         if (article)
-                                            textarea(rows='10' name='full-text' placeholder='Полный текст публикации') #{article.text}
+                                            textarea(rows='10' name='full-text' placeholder='Полный текст публикации') #{article.articleText}
                                         else
                                             textarea(rows='10' name='full-text' placeholder='Полный текст публикации')
 

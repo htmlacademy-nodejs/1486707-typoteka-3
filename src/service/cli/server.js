@@ -64,6 +64,7 @@ module.exports = {
       logger.error(`An error occured: ${err.message}`);
       process.exit(1);
     }
+    logger.info(`Connection established.`);
 
     const [customPort] = args;
     const port = Number.parseInt(customPort, 10) || DEFAULT_PORT;
