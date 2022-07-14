@@ -13,14 +13,16 @@ const {HttpCode} = require(`../../constants`);
 const mockCategories = require(`../../mockTestData/mockCategories`);
 const mockArticles = require(`../../mockTestData/mockArticles`);
 
-const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
-
 
 const createAPI = async () => {
+  const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
+  // подозреваю, что следующая строка не работает как надо. Почему - непонятно
+  await initDB(mockDB, {categories: mockCategories, articles: mockArticles});
+
   const app = express();
   app.use(express.json());
-  await initDB(mockDB, {categories: mockCategories, articles: mockArticles});
   category(app, new DataService(mockDB));
+  return app;
 };
 
 describe(`Category REST API`, () => {
