@@ -7,7 +7,9 @@ const upload = require(`../middlewares/upload`);
 const articlesRouter = new Router();
 
 articlesRouter.get(`/category/:id`, (req, res) => res.render(`articles-by-category.pug`));
+
 articlesRouter.get(`/add`, (req, res) => res.render(`post.pug`));
+
 articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
   const {body, file} = req;
   const articleData = {
@@ -26,11 +28,13 @@ articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
   }
 
 });
+
 articlesRouter.get(`/edit/:id`, async (req, res) => {
   const {id} = req.params;
   const article = await api.getArticle(id);
   res.render(`post.pug`, {article});
 });
+
 articlesRouter.get(`/:id`, async (req, res) => {
   const {id} = req.params;
   const [article, comments, categories] = await Promise.all([

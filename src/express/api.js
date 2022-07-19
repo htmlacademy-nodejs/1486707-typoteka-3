@@ -19,12 +19,12 @@ class API {
     return response.data;
   }
 
-  getArticles() {
-    return this._load(`/articles`);
+  getArticles(offset, limit, comments) {
+    return this._load(`/articles`, {params: {offset, limit, comments}});
   }
 
-  getArticle(id) {
-    return this._load(`/articles/${id}`);
+  getArticle(id, comments) {
+    return this._load(`/articles/${id}`, {params: {comments}});
   }
 
   async getAllComments() {

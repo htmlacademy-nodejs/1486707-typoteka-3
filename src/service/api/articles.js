@@ -12,8 +12,11 @@ module.exports = (app, articleService, commentsService) => {
   app.use(`/articles`, route);
 
   route.get(`/`, async (req, res) => {
-    const articles = await articleService.findAll();
-    return res.status(HttpCode.OK).json(articles);
+    const {offset, limit, comments} = req.query;
+    const result = limit || offset
+      ? await articleService.findPage({limit, offset, withComments: comments})
+      : await articleService.findAll({withComments: comments});
+    return res.status(HttpCode.OK).json(result);
   });
 
   route.post(`/`, articleValidator, async (req, res) => {
@@ -24,7 +27,8 @@ module.exports = (app, articleService, commentsService) => {
 
   route.get(`/:articleId`, async (req, res) => {
     const {articleId} = req.params;
-    const article = await articleService.findOne(articleId);
+    const {comments} = req.query;
+    const article = await articleService.findOne({id: articleId, withComments: comments});
 
     if (!article) {
       return res.status(HttpCode.NOT_FOUND)
