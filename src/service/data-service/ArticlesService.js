@@ -70,15 +70,14 @@ class ArticlesService {
     return !!affectedRows;
   }
 
-  async findPage({limit, offset, withComments}) {
-    const include = [Aliase.CATEGORIES];
-
-    if (withComments) {
-      include.push({
+  async findPage({limit, offset}) {
+    const include = [
+      Aliase.CATEGORIES,
+      {
         model: this._Comment,
         as: Aliase.COMMENTS,
-      });
-    }
+      }
+    ];
 
     const {count, rows} = await this._Article.findAndCountAll({
       limit,
