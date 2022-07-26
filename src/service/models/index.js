@@ -1,25 +1,17 @@
 'use strict';
 
-const {Model} = require(`sequelize`);
-
 const defineCategory = require(`./category`);
 const defineComment = require(`./comment`);
 const defineArticle = require(`./article`);
+const defineArticlesCategories = require(`./articlesCategories`);
 
 const Aliase = require(`./aliase`);
-
-class ArticlesCategories extends Model {}
 
 const define = (sequelize) => {
   const Category = defineCategory(sequelize);
   const Comment = defineComment(sequelize);
   const Article = defineArticle(sequelize);
-
-  ArticlesCategories.init({}, {
-    sequelize,
-    modelName: `ArticlesCategories`,
-    tableName: `articlesCategories`
-  });
+  const ArticlesCategories = defineArticlesCategories(sequelize);
 
   Article.hasMany(Comment, {as: Aliase.COMMENTS, foreignKey: `articleId`, onDelete: `cascade`});
   Comment.belongsTo(Article, {foreignKey: `artilceId`});

@@ -2,17 +2,24 @@
 
 const express = require(`express`);
 const supertest = require(`supertest`);
+const Sequelize = require(`sequelize`);
 
+const initDB = require(`../lib/init-db`);
 const search = require(`./search`);
 const DataService = require(`../data-service/SearchService`);
-const {mockData} = require(`../../test-mock-data`);
 const {HttpCode} = require(`../../constants`);
 
-const createAPI = () => {
+const mockCategories = require(`../../mockTestData/mockCategories`);
+const mockArticles = require(`../../mockTestData/mockArticles`);
+
+
+const createAPI = async () => {
+  const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
+  await initDB(mockDB, {categories: mockCategories, articles: mockArticles});
+
   const app = express();
-  const cloneData = JSON.parse(JSON.stringify(mockData));
   app.use(express.json());
-  search(app, new DataService(cloneData));
+  search(app, new DataService(mockDB));
   return app;
 };
 
@@ -20,14 +27,14 @@ describe(`Search REST API`, () => {
   let server;
   let request;
 
-  beforeEach((done) => {
-    const api = createAPI();
-    server = api.listen(done);
+  beforeEach(async () => {
+    const api = await createAPI();
+    server = api.listen();
     request = supertest.agent(server);
   });
 
-  afterEach((done) => {
-    server.close(done);
+  afterEach(() => {
+    server.close();
   });
 
   describe(`API returns a title based on the search query`, () => {

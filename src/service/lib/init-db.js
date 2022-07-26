@@ -16,13 +16,14 @@ module.exports = async (sequelize, {categories, articles}) => {
     ...acc
   }), {});
 
-  const articlePromises = articles.map(async (article) => {
+  let articleModelPromises;
+  for (const article of articles) {
     const articleModel = await Article.create(article, {include: [Aliase.COMMENTS]});
-    await articleModel.addCategories(
-        article.categories.map(
-            (name) => categoryIdByName[name]
-        )
+    const articleCategories = article.categories.map(
+        (name) => categoryIdByName[name]
     );
-  });
-  await Promise.all(articlePromises);
+    articleModelPromises = await articleModel.addCategories(articleCategories);
+  }
+  const resolvedArticlePromises = await Promise.all(articleModelPromises);
+  return resolvedArticlePromises;
 };
