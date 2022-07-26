@@ -16,7 +16,6 @@ const mockArticles = require(`../../mockTestData/mockArticles`);
 
 const createAPI = async () => {
   const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
-  // подозреваю, что следующая строка не работает как надо. Почему - непонятно
   await initDB(mockDB, {categories: mockCategories, articles: mockArticles});
 
   const app = express();
@@ -36,7 +35,7 @@ describe(`Category REST API`, () => {
     test(`Returns list of 3 titles`, async () => {
       const app = await createAPI();
       const response = await request(app).get(`/categories`);
-      return expect(response.body.length).toBe(3);
+      return expect(response.body.length).toBe(9);
     });
   });
 

@@ -12,8 +12,11 @@ module.exports = (app, articleService, commentsService) => {
   app.use(`/articles`, route);
 
   route.get(`/`, async (req, res) => {
-    const articles = await articleService.findAll();
-    return res.status(HttpCode.OK).json(articles);
+    const {offset, limit} = req.query;
+    const result = limit || offset
+      ? await articleService.findPage({limit, offset})
+      : await articleService.findAll({withComments: true});
+    return res.status(HttpCode.OK).json(result);
   });
 
   route.post(`/`, articleValidator, async (req, res) => {
@@ -35,10 +38,10 @@ module.exports = (app, articleService, commentsService) => {
   });
 
   route.put(`/:articleId`, [articleExists(articleService), articleValidator], async (req, res) => {
-    const {article} = res.locals;
+    const {articleId} = req.params;
     const newArticle = req.body;
 
-    const updatedArticle = await articleService.update(article.id, newArticle);
+    const updatedArticle = await articleService.update(articleId, newArticle);
     return res.status(HttpCode.OK).json(updatedArticle);
   });
 
@@ -57,25 +60,23 @@ module.exports = (app, articleService, commentsService) => {
   });
 
   route.get(`/:articleId/comments/:commentId`, articleExists(articleService), async (req, res) => {
-    const {article} = res.locals;
-    const {commentId} = req.params;
-    const comment = await commentsService.findOne(article, commentId);
+    const {articleId, commentId} = req.params;
+    const comment = await commentsService.findOne(articleId, commentId);
 
     return res.status(HttpCode.OK).json(comment);
   });
 
   route.post(`/:articleId/comments`, [articleExists(articleService), commentValidator], async (req, res) => {
-    const {article} = res.locals;
-    const comment = await commentsService.create(article, req.body);
+    const {articleId} = req.params;
+    const comment = await commentsService.create(articleId, req.body);
 
     return res.status(HttpCode.CREATED).json(comment);
   });
 
   route.delete(`/:articleId/comments/:commentId`, [articleExists(articleService), commentExists(articleService, commentsService)], async (req, res) => {
-    const {article} = res.locals;
-    const {comment} = res.locals;
+    const {commentId} = req.params;
 
-    const deletedComment = await commentsService.drop(article, comment.id);
+    const deletedComment = await commentsService.drop(commentId);
 
     return res.status(HttpCode.OK).json(deletedComment);
   });
