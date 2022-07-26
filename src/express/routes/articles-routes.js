@@ -14,9 +14,8 @@ articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
     picture: file ? file.filename : ``,
     title: body.title,
     announce: body.announcement,
-    text: body[`full-text`],
-    category: [],
-    comments: []
+    articleText: body[`full-text`],
+    categories: [],
   };
   try {
     await api.createArticle(articleData);

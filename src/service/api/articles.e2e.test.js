@@ -2,26 +2,31 @@
 
 const express = require(`express`);
 const supertest = require(`supertest`);
+const Sequelize = require(`sequelize`);
 
+const initDB = require(`../lib/init-db`);
 const articles = require(`./articles`);
-const ArticlesService = require(`../data-service/ArticlesService`);
+const DataService = require(`../data-service/ArticlesService`);
 const CommentsService = require(`../data-service/CommentsService`);
-const {mockData} = require(`../../test-mock-data`);
 const {HttpCode} = require(`../../constants`);
+
+const mockCategories = require(`../../mockTestData/mockCategories`);
+const mockArticles = require(`../../mockTestData/mockArticles`);
 
 const newArticle = {
   title: `Test title`,
   announce: `Test announce`,
-  text: `Test text`,
-  category: [`Test category 1`, `Test category 2`],
-  comments: []
+  articleText: `Test text`,
+  categories: [2, 3]
 };
 
-const createAPI = () => {
+const createAPI = async () => {
+  const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
+  await initDB(mockDB, {categories: mockCategories, articles: mockArticles});
+
   const app = express();
-  const cloneData = JSON.parse(JSON.stringify(mockData));
   app.use(express.json());
-  articles(app, new ArticlesService(cloneData), new CommentsService());
+  articles(app, new DataService(mockDB), new CommentsService(mockDB));
   return app;
 };
 
@@ -29,14 +34,14 @@ describe(`Article REST API`, () => {
   let server;
   let request;
 
-  beforeEach((done) => {
-    const api = createAPI();
-    server = api.listen(done);
+  beforeEach(async () => {
+    const api = await createAPI();
+    server = api.listen();
     request = supertest.agent(server);
   });
 
-  afterEach((done) => {
-    server.close(done);
+  afterEach(() => {
+    server.close();
   });
 
   describe(`API returns a list of all articles`, () => {
@@ -48,20 +53,20 @@ describe(`Article REST API`, () => {
       const response = await request.get(`/articles`);
       return expect(response.body.length).toBe(5);
     });
-    test(`First article's id is "jDuz1E"`, async () => {
+    test(`First article's id is "5"`, async () => {
       const response = await request.get(`/articles`);
-      return expect(response.body[0].id).toBe(`jDuz1E`);
+      return expect(response.body[0].id).toBe(5);
     });
   });
 
   describe(`API returns an article with given id`, () => {
     test(`Status code 200`, async () => {
-      const response = await request.get(`/articles/jDuz1E`);
+      const response = await request.get(`/articles/5`);
       return expect(response.statusCode).toBe(HttpCode.OK);
     });
     test(`Article title is "Как собрать камни бесконечности"`, async () => {
-      const response = await request.get(`/articles/jDuz1E`);
-      return expect(response.body.title).toBe(`Как собрать камни бесконечности`);
+      const response = await request.get(`/articles/5`);
+      return expect(response.body.title).toBe(`Как начать программировать`);
     });
   });
 
@@ -69,10 +74,6 @@ describe(`Article REST API`, () => {
     test(`Status code 201`, async () => {
       const response = await request.post(`/articles`).send(newArticle);
       return expect(response.statusCode).toBe(HttpCode.CREATED);
-    });
-    test(`Returns the created article`, async () => {
-      const response = await request.post(`/articles`).send(newArticle);
-      return expect(response.body).toEqual(expect.objectContaining(newArticle));
     });
     test(`Articles count is changed`, async () => {
       const checksBodyLength = (res) => expect(res.body.length).toBe(6);
@@ -97,20 +98,20 @@ describe(`Article REST API`, () => {
   describe(`API changes existent article`, () => {
     test(`Status code 200`, async () => {
       const response = await request
-          .put(`/articles/jDuz1E`)
+          .put(`/articles/5`)
           .send(newArticle);
       return expect(response.statusCode).toBe(HttpCode.OK);
     });
     test(`Returns the changed article`, async () => {
       const response = await request
-          .put(`/articles/jDuz1E`)
+          .put(`/articles/5`)
           .send(newArticle);
-      return expect(response.body).toEqual(expect.objectContaining(newArticle));
+      return expect(response.body).toEqual(true);
     });
     test(`Article is really changed`, async () => {
       return request
-        .get(`/articles/jDuz1E`)
-        .expect((res) => expect(res.body.title).toBe(`Как собрать камни бесконечности`));
+        .get(`/articles/5`)
+        .expect((res) => expect(res.body.title).toBe(`Как начать программировать`));
     });
   });
 
@@ -128,7 +129,7 @@ describe(`Article REST API`, () => {
         text: `Test text`,
       };
       return await request
-        .put(`/articles/jDuz1E`)
+        .put(`/articles/5`)
         .send(invalidArticle)
         .expect(HttpCode.BAD_REQUEST);
     });
@@ -137,15 +138,11 @@ describe(`Article REST API`, () => {
   describe(`API correctly deletes an article`, () => {
 
     test(`Status code 200`, async () => {
-      const response = await request.delete(`/articles/jDuz1E`);
+      const response = await request.delete(`/articles/5`);
       return expect(response.statusCode).toBe(HttpCode.OK);
     });
-    test(`Returns deleted article`, async () => {
-      const response = await request.delete(`/articles/jDuz1E`);
-      return expect(response.body.id).toBe(`jDuz1E`);
-    });
     test(`Article count is 4 now`, async () => {
-      await request.delete(`/articles/jDuz1E`);
+      await request.delete(`/articles/5`);
       return await request.get(`/articles`)
       .expect((res) => expect(res.body.length).toBe(4));
     });
