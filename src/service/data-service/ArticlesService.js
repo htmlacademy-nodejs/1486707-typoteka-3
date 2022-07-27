@@ -22,8 +22,15 @@ class ArticlesService {
     return !!deletedRows;
   }
 
-  async findAll() {
+  async findAll({withComments}) {
     const include = [Aliase.CATEGORIES];
+
+    if (withComments) {
+      include.push({
+        model: this._Comment,
+        as: Aliase.COMMENTS,
+      });
+    }
 
     const articles = await this._Article.findAll({
       include,
@@ -35,11 +42,20 @@ class ArticlesService {
     return articles.map((item) => item.get());
   }
 
-  async findOne(id) {
+  async findOne({id, withComments}) {
+    const include = [Aliase.CATEGORIES];
+
+    if (withComments) {
+      include.push({
+        model: this._Comment,
+        as: Aliase.COMMENTS,
+      });
+    }
+
     return await this._Article.findByPk(
         id,
         {
-          include: [Aliase.CATEGORIES]
+          include
         }
     );
   }
@@ -52,6 +68,27 @@ class ArticlesService {
         }
     );
     return !!affectedRows;
+  }
+
+  async findPage({limit, offset}) {
+    const include = [
+      Aliase.CATEGORIES,
+      {
+        model: this._Comment,
+        as: Aliase.COMMENTS,
+      }
+    ];
+
+    const {count, rows} = await this._Article.findAndCountAll({
+      limit,
+      offset,
+      include,
+      order: [
+        [`createdAt`, `DESC`]
+      ],
+      distinct: true
+    });
+    return {count, articles: rows};
   }
 }
 
