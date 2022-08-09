@@ -3,7 +3,7 @@ extends layout.pug
 block header-content
     include partials/header-components/header-user.pug
 
-block main-content 
+block main-content
     main
         section.post
             h1.visually-hidden Пост
@@ -46,4 +46,5 @@ block main-content
                                     img(src='./img/avatar-2.png' alt='аватар пользователя')
                             label
                                 textarea(rows='1' name='message' placeholder='Присоединиться к обсуждению')
+                            +insertErrorMessages(validateMessages)
                             button.comments__button.button.button--colored(type='submit') Опубликовать

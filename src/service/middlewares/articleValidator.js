@@ -3,8 +3,6 @@
 const Joi = require(`joi`);
 const {HttpCode} = require(`../../constants`);
 
-const articleKeys = [`title`, `announce`, `articleText`, `categories`];
-
 const ErrorArticleMessage = {
   TITLE_MIN: `Заголовок должен содержать не меньше 30 симоволов`,
   TITLE_MAX: `Заголовок должен содержать не больше 250 символов`,
@@ -30,7 +28,7 @@ const schema = Joi.object({
   }).required(),
   articleText: Joi.string().max(1000).messages({
     'string.max': ErrorArticleMessage.TEXT
-  }).required(),
+  }),
   picture: Joi.string()
 });
 

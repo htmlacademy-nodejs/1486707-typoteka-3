@@ -14,8 +14,8 @@ const mockCategories = require(`../../mockTestData/mockCategories`);
 const mockArticles = require(`../../mockTestData/mockArticles`);
 
 const newArticle = {
-  title: `Test title`,
-  announce: `Test announce`,
+  title: `Test title of valid lengthhhhhhhhhhhhhh`,
+  announce: `Test announce of valid lengthhhhhhhhhhhhhh`,
   articleText: `Test text`,
   categories: [2, 3]
 };
@@ -84,13 +84,44 @@ describe(`Article REST API`, () => {
 
   describe(`API refuses to create an invalid data article`, () => {
     test(`Status Code is 400 without any of the required property`, async () => {
-      for (const key of Object.keys(newArticle)) {
-        const badArticle = {...newArticle};
-        delete badArticle[key];
+      const invalidArticles = [
+        {...newArticle, title: undefined},
+        {...newArticle, announce: undefined},
+        {...newArticle, categories: undefined},
+      ];
+      for (const invalidArticle of invalidArticles) {
         await request
-              .post(`/articles`)
-              .send(badArticle)
-              .expect(HttpCode.BAD_REQUEST);
+          .post(`/articles`)
+          .send(invalidArticle)
+          .expect(HttpCode.BAD_REQUEST);
+      }
+    });
+
+    test(`Status Code is 400 when a field has an invalid type`, async () => {
+      const invalidArticles = [
+        {...newArticle, title: 123},
+        {...newArticle, announce: true},
+        {...newArticle, categories: `random string`},
+      ];
+      for (const invalidArticle of invalidArticles) {
+        await request
+          .post(`/articles`)
+          .send(invalidArticle)
+          .expect(HttpCode.BAD_REQUEST);
+      }
+    });
+
+    test(`Status Code is 400 when a field has an invalid value`, async () => {
+      const invalidArticles = [
+        {...newArticle, title: `short`},
+        {...newArticle, announce: `short`},
+        {...newArticle, categories: [`string`, `string`]},
+      ];
+      for (const invalidArticle of invalidArticles) {
+        await request
+          .post(`/articles`)
+          .send(invalidArticle)
+          .expect(HttpCode.BAD_REQUEST);
       }
     });
   });

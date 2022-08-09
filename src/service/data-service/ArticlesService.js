@@ -6,7 +6,6 @@ class ArticlesService {
   constructor(sequelize) {
     this._Article = sequelize.models.Article;
     this._Comment = sequelize.models.Comment;
-    this._Category = sequelize.models.Category;
   }
 
   async create(articleData) {
