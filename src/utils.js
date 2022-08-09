@@ -47,9 +47,17 @@ const getRandomSubarray = (items) => {
   return result;
 };
 
+const prepareErrors = (errors) => {
+  return errors.response.data;
+};
+
+const ensureArray = (value) => Array.isArray(value) ? value : [value];
+
 module.exports = {
   getRandomInt,
   arrayShuffle,
   getRandomDate,
-  getRandomSubarray
+  getRandomSubarray,
+  prepareErrors,
+  ensureArray
 };

@@ -13,6 +13,24 @@ link(rel='stylesheet' href='/css/style.min.css')
       pointer-events: none;
     }
 
+  style.
+    .server-error-container {
+      display: flex;
+      justify-content: center;
+    }
+    .server-error {
+      border-radius: 10px;
+      color: white;
+      background-color: tomato;
+      margin: 20px 0;
+      padding: 10px;
+    }
+
+  mixin insertErrorMessage(messages)
+     if (messages)
+        each message in messages
+          .server-error= message
+
   mixin pagination (page, totalPages, width, prefix)
     -
       let start = page - width;
@@ -46,6 +64,6 @@ link(rel='stylesheet' href='/css/style.min.css')
 
   block main-content
 
-  include partials/footer.pug  
+  include partials/footer.pug
 script(src='/js/vendor.js')
 script(src='/js/main.js')

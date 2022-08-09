@@ -3,7 +3,7 @@ extends layout.pug
 block header-content
     include partials/header-components/header-dropdown.pug
 
-block main-content 
+block main-content
     main
         - var currentDate = Date.now().toString()
         section
@@ -65,4 +65,8 @@ block main-content
                                             textarea(rows='10' name='full-text' placeholder='Полный текст публикации') #{article.articleText}
                                         else
                                             textarea(rows='10' name='full-text' placeholder='Полный текст публикации')
+                                .server-error-container
+                                    if (validationMessages)
+                                        each message in validationMessages
+                                            span.server-error= message
 
