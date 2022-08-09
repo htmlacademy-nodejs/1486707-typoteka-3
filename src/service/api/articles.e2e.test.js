@@ -147,9 +147,15 @@ describe(`Article REST API`, () => {
   });
 
   describe(`API returns errors when expected`, () => {
+    test(`API returns status code 400 when trying to change an article with an invalid id`, async () => {
+      return await request
+        .put(`/articles/invalidId`)
+        .send(newArticle)
+        .expect(HttpCode.BAD_REQUEST);
+    });
     test(`API returns status code 404 when trying to change an unexistent article`, async () => {
       return await request
-      .put(`/articles/invalidId`)
+      .put(`/articles/1000`)
       .send(newArticle)
       .expect(HttpCode.NOT_FOUND);
     });
@@ -178,7 +184,7 @@ describe(`Article REST API`, () => {
       .expect((res) => expect(res.body.length).toBe(4));
     });
     test(`API refuses to delete non-existent article`, async () => {
-      return await request.delete(`/articles/invalidId`)
+      return await request.delete(`/articles/1000`)
       .expect(HttpCode.NOT_FOUND);
     });
   });

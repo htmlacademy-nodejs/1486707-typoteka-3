@@ -43,8 +43,8 @@ articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
   try {
     await api.createArticle(articleData);
     res.redirect(`/my`);
-  } catch (error) {
-    const validationMessages = prepareErrors(error);
+  } catch (errors) {
+    const validationMessages = prepareErrors(errors);
     const categories = await getAddArticleData();
     const article = articleData;
     res.render(`post.pug`, {article, validationMessages, categories});

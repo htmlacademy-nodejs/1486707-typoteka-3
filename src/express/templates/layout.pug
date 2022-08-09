@@ -14,6 +14,10 @@ link(rel='stylesheet' href='/css/style.min.css')
     }
 
   style.
+    .server-error-container {
+      display: flex;
+      justify-content: center;
+    }
     .server-error {
       border-radius: 10px;
       color: white;
@@ -23,9 +27,9 @@ link(rel='stylesheet' href='/css/style.min.css')
     }
 
   mixin insertErrorMessage(messages)
-    if messages
-      each message of messages
-        .server-error= message
+     if (messages)
+        each message in messages
+          .server-error= message
 
   mixin pagination (page, totalPages, width, prefix)
     -
