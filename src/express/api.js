@@ -69,6 +69,13 @@ class API {
       data
     });
   }
+
+  async createUser(data) {
+    return this._load(`/main/register`, {
+      method: HttpMethod.POST,
+      data
+    });
+  }
 }
 
 const defaultAPI = new API(defaultUrl, TIMEOUT);

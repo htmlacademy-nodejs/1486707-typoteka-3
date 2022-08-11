@@ -9,7 +9,8 @@ const ErrorArticleMessage = {
   ANNOUNCE_MIN: `Анонс должен содержать не меньше 30 символов`,
   ANNOUNCE_MAX: `Анонс должен содержать не больше 250 символов`,
   TEXT: `Текст должен содержать не больше 1000 символов`,
-  CATEGORIES: `Не выбрана ни одна категория`
+  CATEGORIES: `Не выбрана ни одна категория`,
+  USER_ID: `Некорректный идентификатор пользователя`
 };
 
 const schema = Joi.object({
@@ -29,7 +30,10 @@ const schema = Joi.object({
   articleText: Joi.string().max(1000).messages({
     'string.max': ErrorArticleMessage.TEXT
   }),
-  picture: Joi.string()
+  picture: Joi.string(),
+  userId: Joi.number().integer().positive().required().messages({
+    'number.base': ErrorArticleMessage.USER_ID
+  })
 });
 
 module.exports = (req, res, next) => {
