@@ -46,8 +46,8 @@ block main-content
                                     img(src='./img/avatar-2.png' alt='аватар пользователя')
                             label
                                 textarea(rows='1' name='message' placeholder='Присоединиться к обсуждению')
-                            .server-error-container
+                            .form__errors
                               if (validationMessages)
                                 each message in validationMessages
-                                  span.server-error= message
+                                  span.form__error= message
                             button.comments__button.button.button--colored(type='submit') Опубликовать

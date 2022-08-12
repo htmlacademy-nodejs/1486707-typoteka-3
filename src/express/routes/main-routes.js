@@ -4,7 +4,7 @@ const {Router} = require(`express`);
 const mainRouter = new Router();
 const api = require(`../api`).getAPI();
 const upload = require(`../middlewares/upload`);
-const {prepareErrors} = require("../../utils");
+const {prepareErrors} = require(`../../utils`);
 
 const ARTICLES_PER_PAGE = 8;
 
