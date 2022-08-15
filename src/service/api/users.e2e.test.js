@@ -114,6 +114,46 @@ describe(`User REST API`, () => {
       expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
     });
   });
+
+  describe(`API authenticate user if data is valid`, () => {
+    const validAuthData = {
+      email: `ivanov@example.com`,
+      password: `ivanov`
+    };
+
+    test(`Status code is 200`, async () => {
+      const response = await request.post(`/user/auth`).send(validAuthData);
+      expect(response.statusCode).toBe(HttpCode.OK);
+    });
+
+    test(`User name is Иван Иванов`, async () => {
+      const response = await request.post(`/user/auth`).send(validAuthData);
+      expect(response.body.name).toBe(`Иван`);
+      expect(response.body.surname).toBe(`Иванов`);
+    });
+  });
+
+  describe(`API refuses to authenticate user if data is invalid`, () => {
+    test(`if email is incorrect status is 401`, async () => {
+      const badEmailData = {
+        email: `invalid@test.com`,
+        password: `ivanov`
+      };
+
+      const response = await request.post(`/user/auth`).send(badEmailData);
+      expect(response.statusCode).toBe(HttpCode.UNAUTHORIZED);
+    });
+
+    test(`if password doesn't match status code is 401`, async () => {
+      const badPasswordData = {
+        email: `ivanov@example.com`,
+        password: `invalidPassword`
+      };
+
+      const response = await request.post(`/user/auth`).send(badPasswordData);
+      expect(response.statusCode).toBe(HttpCode.UNAUTHORIZED);
+    });
+  });
 });
 
 
