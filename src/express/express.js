@@ -4,7 +4,7 @@ const express = require(`express`);
 const session = require(`express-session`);
 const path = require(`path`);
 const SequelizeStore = require(`connect-session-sequelize`)(session.Store);
-const sequelize = require(`sequelize`);
+const sequelize = require(`../service/lib/sequelize`);
 
 const articlesRoutes = require(`./routes/articles-routes`);
 const myRoutes = require(`./routes/my-routes`);
@@ -56,4 +56,4 @@ app.use((err, _req, res, _next) => {
 app.set(`views`, path.resolve(__dirname, `templates`));
 app.set(`view engine`, `pug`);
 
-app.listen(DEFAULT_PORT);
+app.listen(process.env.PORT || DEFAULT_PORT);

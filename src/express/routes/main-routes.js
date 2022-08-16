@@ -44,20 +44,23 @@ mainRouter.get(`/search`, async (req, res) => {
 mainRouter.post(`/register`, upload.single(`avatar`), async (req, res) => {
   const {body, file} = req;
   const userData = {
-    name: body[`name`],
-    surname: body[`surname`],
-    email: body[`email`],
-    password: body[`password`],
+    name: body.name,
+    surname: body.surname,
+    email: body.email,
+    password: body.password,
     passwordRepeated: body[`repeat-password`],
-    avatar: file ? file.filename : ``,
   };
+
+  if (file && file.filename) {
+    userData[`avatar`] = file.filename;
+  }
 
   try {
     await api.createUser(userData);
     res.redirect(`/login`);
   } catch (errors) {
     const validationMessages = prepareErrors(errors);
-    res.render(`sign-up`, {validationMessages});
+    res.render(`sign-up.pug`, {validationMessages});
   }
 });
 
@@ -70,8 +73,7 @@ mainRouter.post(`/login`, async (req, res) => {
     });
   } catch (errors) {
     const validationMessages = prepareErrors(errors);
-    const {user} = req.session;
-    res.render(`login`, {user, validationMessages});
+    res.render(`login.pug`, {validationMessages});
   }
 });
 

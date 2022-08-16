@@ -90,8 +90,7 @@ module.exports = {
         name: `Сидор`,
         surname: `Сидоров`,
         email: `sidorov@example.com`,
-        password: `sidorov`,
-        passwordRepeated: `sidorov`,
+        passwordHash: await passwordUtils.hash(`sidorov`),
         avatar: `sidorov.jpg`
       },
     ];

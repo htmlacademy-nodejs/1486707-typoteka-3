@@ -71,7 +71,7 @@ class API {
   }
 
   createUser(data) {
-    return this._load(`/main/register`, {
+    return this._load(`/user`, {
       method: HttpMethod.POST,
       data
     });

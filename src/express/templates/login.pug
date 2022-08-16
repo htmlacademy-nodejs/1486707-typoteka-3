@@ -16,14 +16,14 @@ block main-content
                     form(action='/login' method='post')
                         .form__field
                             label
-                                input(type='email' name='email' placeholder='Электронная почта' required='')
+                                input(type='text' name='email' placeholder='Электронная почта')
                         .form__field
                             label
-                                input(type='password' name='password' placeholder='Пароль' required='')
+                                input(type='text' name='password' placeholder='Пароль')
                         if (validationMessages)
                             .form__validation-error
                                 p.form__error-message При регистрации произошли ошибки:
                                 ul.form__errors
                                     each message in validationMessages
-                                        li.form__error#message
+                                        li.form__error #{message}
                         button.form__submit-btn.form__submit-btn--log-in.button.button--colored(type='submit') Войти
