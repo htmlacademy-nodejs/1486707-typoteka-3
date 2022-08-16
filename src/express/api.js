@@ -20,12 +20,12 @@ class API {
     return response.data;
   }
 
-  getArticles(offset, limit) {
-    return this._load(`/articles`, {params: {offset, limit}});
+  getArticles(offset, limit, userId) {
+    return this._load(`/articles`, {params: {offset, limit, userId}});
   }
 
-  getArticle(id, comments) {
-    return this._load(`/articles/${id}`, {params: {comments}});
+  getArticle(id, comments, userId) {
+    return this._load(`/articles/${id}`, {params: {comments, userId}});
   }
 
   async getAllComments() {
@@ -67,6 +67,20 @@ class API {
     return this._load(`/articles/${id}/comments`, {
       method: HttpMethod.POST,
       data
+    });
+  }
+
+  createUser(data) {
+    return this._load(`/user`, {
+      method: HttpMethod.POST,
+      data
+    });
+  }
+
+  auth(email, password) {
+    return this._load(`/user/auth`, {
+      method: HttpMethod.POST,
+      data: {email, password}
     });
   }
 }

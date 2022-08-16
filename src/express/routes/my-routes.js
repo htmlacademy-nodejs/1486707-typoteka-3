@@ -1,10 +1,13 @@
 'use strict';
 
 const {Router} = require(`express`);
-const myRouter = new Router();
+
+const auth = require(`../middlewares/auth`);
 const api = require(`../api`).getAPI();
 
-myRouter.get(`/`, async (req, res) => {
+const myRouter = new Router();
+
+myRouter.get(`/`, auth, async (req, res) => {
   const articles = await api.getArticles();
   res.render(`my.pug`, {articles});
 });
@@ -15,7 +18,7 @@ myRouter.get(`/`, async (req, res) => {
 //   res.render(`comments.pug`, {comments});
 // });
 
-myRouter.get(`/categories`, async (req, res) => {
+myRouter.get(`/categories`, auth, async (req, res) => {
   const categories = await api.getCategories();
   res.render(`all-categories`, {categories});
 });

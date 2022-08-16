@@ -75,7 +75,7 @@ module.exports = (app, articleService, commentsService) => {
     return res.status(HttpCode.CREATED).json(comment);
   });
 
-  route.delete(`/:articleId/comments/:commentId`, [routeParamsValidator,articleExists(articleService), commentExists(articleService, commentsService)], async (req, res) => {
+  route.delete(`/:articleId/comments/:commentId`, [routeParamsValidator, articleExists(articleService), commentExists(articleService, commentsService)], async (req, res) => {
     const {commentId} = req.params;
 
     const deletedComment = await commentsService.drop(commentId);

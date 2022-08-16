@@ -3,7 +3,7 @@ extends layout.pug
 block header-content
     include partials/header-components/header-popup.pug
 
-block main-content 
+block main-content
     main
         h1.visually-hidden Регистрация пользователя
         section
@@ -13,12 +13,17 @@ block main-content
                     | окно
                 h2.popup__title Войти
                 .popup__form.form.form--log-in
-                    form(action='#' method='get')
+                    form(action='/login' method='post')
                         .form__field
                             label
-                                input(type='email' name='email' placeholder='Электронная почта' required='')
+                                input(type='text' name='email' placeholder='Электронная почта')
                         .form__field
                             label
-                                input(type='password' name='password' placeholder='Пароль' required='')
-                        p.form__error-message Некоторая ошибка произошла, беда!
+                                input(type='text' name='password' placeholder='Пароль')
+                        if (validationMessages)
+                            .form__validation-error
+                                p.form__error-message При регистрации произошли ошибки:
+                                ul.form__errors
+                                    each message in validationMessages
+                                        li.form__error #{message}
                         button.form__submit-btn.form__submit-btn--log-in.button.button--colored(type='submit') Войти

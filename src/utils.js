@@ -48,7 +48,7 @@ const getRandomSubarray = (items) => {
 };
 
 const prepareErrors = (errors) => {
-  return errors.response.data;
+  return errors.response.data.split(`\n`);
 };
 
 const ensureArray = (value) => Array.isArray(value) ? value : [value];

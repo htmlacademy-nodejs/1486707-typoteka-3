@@ -10,6 +10,7 @@ block main-content
             .popup.popup--new-publication.popup--anti
                 .new-publication
                     form(action='/articles/add' method='POST', enctype="multipart/form-data")
+                        input(type="hidden" name="_csrf" value=csrfToken)
                         .new-publication__header
                             if (article)
                                 h1 #{article.title}
@@ -66,7 +67,10 @@ block main-content
                                         else
                                             textarea(rows='10' name='full-text' placeholder='Полный текст публикации')
                                 .server-error-container
-                                    if (validationMessages)
-                                        each message in validationMessages
-                                            span.server-error= message
+                                        if (validationMessages)
+                                            .form__validation-error
+                                                p.form__error-message При регистрации произошли ошибки:
+                                                ul.form__errors
+                                                    each message in validationMessages
+                                                        li.form__error #{message}
 

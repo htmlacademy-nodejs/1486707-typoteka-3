@@ -6,6 +6,7 @@ class ArticlesService {
   constructor(sequelize) {
     this._Article = sequelize.models.Article;
     this._Comment = sequelize.models.Comment;
+    this._User = sequelize.models.User;
   }
 
   async create(articleData) {
@@ -22,12 +23,30 @@ class ArticlesService {
   }
 
   async findAll({withComments}) {
-    const include = [Aliase.CATEGORIES];
+    const include = [
+      Aliase.CATEGORIES,
+      {
+        model: this._User,
+        as: Aliase.USERS,
+        attributes: {
+          exclude: [`passwordHash`]
+        }
+      }
+    ];
 
     if (withComments) {
       include.push({
         model: this._Comment,
         as: Aliase.COMMENTS,
+        include: [
+          {
+            model: this._User,
+            as: Aliase.USERS,
+            attributes: {
+              exclude: [`passwordHash`]
+            }
+          }
+        ]
       });
     }
 
@@ -42,12 +61,30 @@ class ArticlesService {
   }
 
   async findOne({id, withComments}) {
-    const include = [Aliase.CATEGORIES];
+    const include = [
+      Aliase.CATEGORIES,
+      {
+        model: this._User,
+        as: Aliase.USERS,
+        attributes: {
+          exclude: [`passwordHash`]
+        }
+      }
+    ];
 
     if (withComments) {
       include.push({
         model: this._Comment,
         as: Aliase.COMMENTS,
+        include: [
+          {
+            model: this._User,
+            as: Aliase.USERS,
+            attributes: {
+              exclude: [`passwordHash`]
+            }
+          }
+        ]
       });
     }
 
@@ -73,8 +110,11 @@ class ArticlesService {
     const include = [
       Aliase.CATEGORIES,
       {
-        model: this._Comment,
-        as: Aliase.COMMENTS,
+        model: this._User,
+        as: Aliase.USERS,
+        attributes: {
+          exclude: [`passwordHash`]
+        }
       }
     ];
 

@@ -5,7 +5,6 @@ const Aliase = require(`../models/aliase`);
 
 class CategoryService {
   constructor(sequelize) {
-    this._Article = sequelize.models.Article;
     this._Category = sequelize.models.Category;
     this._ArticlesCategories = sequelize.models.ArticlesCategories;
   }

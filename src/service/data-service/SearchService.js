@@ -6,6 +6,7 @@ const Aliase = require(`../models/aliase`);
 class SearchService {
   constructor(sequelize) {
     this._Article = sequelize.models.Article;
+    this._User = sequelize.models.User;
   }
 
   async findAll(searchString) {
@@ -15,7 +16,16 @@ class SearchService {
           [Op.substring]: searchString
         }
       },
-      include: [Aliase.CATEGORIES],
+      include: [
+        Aliase.CATEGORIES,
+        {
+          model: this._User,
+          as: Aliase.USERS,
+          attributes: {
+            exclude: [`passwordHash`]
+          }
+        }
+      ],
       order: [
         [`createdAt`, `DESC`]
       ]

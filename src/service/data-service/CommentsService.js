@@ -2,7 +2,6 @@
 
 class CommentsService {
   constructor(sequelize) {
-    this._Article = sequelize.models.Article;
     this._Comment = sequelize.models.Comment;
   }
 
