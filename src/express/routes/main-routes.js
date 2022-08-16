@@ -30,12 +30,14 @@ mainRouter.get(`/register`, (req, res) => res.render(`sign-up.pug`));
 mainRouter.get(`/login`, (req, res) => res.render(`login.pug`));
 
 mainRouter.get(`/search`, async (req, res) => {
+  const {query} = req.query;
+  const {user} = req.session;
+
   try {
-    const {query} = req.query;
     const results = await api.search(query);
-    res.render(`search.pug`, {results});
+    res.render(`search.pug`, {results, user});
   } catch (error) {
-    res.render(`search.pug`, {results: []});
+    res.render(`search.pug`, {results: [], user});
   }
 });
 
@@ -57,6 +59,25 @@ mainRouter.post(`/register`, upload.single(`avatar`), async (req, res) => {
     const validationMessages = prepareErrors(errors);
     res.render(`sign-up`, {validationMessages});
   }
+});
+
+mainRouter.post(`/login`, async (req, res) => {
+  try {
+    const user = await api.auth(req.body[`email`], req.body[`password`]);
+    req.session.user = user;
+    req.session.save(() => {
+      res.redirect(`/`);
+    });
+  } catch (errors) {
+    const validationMessages = prepareErrors(errors);
+    const {user} = req.session;
+    res.render(`login`, {user, validationMessages});
+  }
+});
+
+mainRouter.get(`/logout`, (req, res) => {
+  delete req.session.user;
+  res.redirect(`/`);
 });
 
 module.exports = mainRouter;

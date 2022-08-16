@@ -15,6 +15,7 @@ const mockArticles = require(`../../mockTestData/mockArticles`);
 const mockUsers = require(`../../mockTestData/mockUsers`);
 
 const newArticle = {
+  userId: 1,
   title: `Test title of valid lengthhhhhhhhhhhhhh`,
   announce: `Test announce of valid lengthhhhhhhhhhhhhh`,
   articleText: `Test text`,

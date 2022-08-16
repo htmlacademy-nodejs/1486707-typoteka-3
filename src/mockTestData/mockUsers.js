@@ -1,6 +1,6 @@
 'use strict';
 
-const passwordUtils = require('../../src/service/lib/password');
+const passwordUtils = require(`../../src/service/lib/password`);
 
 module.exports = [{
   name: `Сидор`,

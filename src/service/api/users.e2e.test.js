@@ -101,7 +101,7 @@ describe(`User REST API`, () => {
     });
 
     test(`when password and passwordRepeated are not equal, code is 400`, async () => {
-      const badUser = {...validUser, password: `longEnough`, passwordRepeated: `longEnough`};
+      const badUser = {...validUser, password: `longEnough`, passwordRepeated: `longEnoughButWrong`};
 
       const response = await request.post(`/user`).send(badUser);
       expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);

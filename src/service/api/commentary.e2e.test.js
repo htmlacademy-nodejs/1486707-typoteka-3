@@ -15,10 +15,8 @@ const mockArticles = require(`../../mockTestData/mockArticles`);
 const mockUsers = require(`../../mockTestData/mockUsers`);
 
 const newComment = {
-  avatar: `Test avatar`,
-  name: `Test name`,
-  surname: `surname`,
-  text: `Test text`,
+  userId: 1,
+  text: `Test text of a valid length`,
 };
 
 const createAPI = async () => {
@@ -123,7 +121,7 @@ describe(`Commentary REST API`, () => {
 
     test(`API refuses to delete non-existent comment`, async () => {
       return await request
-      .delete(`/articles/5/comments/invalidId`)
+      .delete(`/articles/5/comments/101`)
       .expect(HttpCode.NOT_FOUND);
     });
   });
