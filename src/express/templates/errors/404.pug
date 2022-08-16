@@ -11,16 +11,16 @@ link(rel='stylesheet' href='css/style.min.css')
   header.header.header--error
     a.header__logo.header__logo--404.logo(href='#')
       img(src='/img/icons/logo.svg' alt='логотип Тайпотеки')
-    a.header__registration(href='#') Регистрация
+    a.header__registration(href='/register') Регистрация
     a.header__enter(href='#') Вход с паролем
-    a.header__search.button.button--search(href='#' aria-label='поиск по сайту')
+    a.header__search.button.button--search(href='/login' aria-label='поиск по сайту')
   main
     h1.visually-hidden Ошибка 404
     section.error
       h2.error__title.title.title--big Похоже ошиблись адресом
       a.error__link.text.text--big(href='main.html') Вернуться на главную
   footer.footer
-    a.footer__copyright(href='#' aria-label='HTMLAcademy')
+    a.footer__copyright(href='https://htmlacademy.ru' aria-label='HTMLAcademy')
       img(src='/img/icons/HTMLAcademyLogo.svg' width='112' height='50' alt='HTMLAcademy')
     span.footer__dot
     p.footer__text Типотека, 2019
