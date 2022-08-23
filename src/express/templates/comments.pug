@@ -1,9 +1,9 @@
 extends layout.pug
 
 block header-content
-    include partials/header-components/header-dropdown.pug
+    include partials/header-main
 
-block main-content 
+block main-content
     main.main-page.main-page--padding
         section.main-page__publication.publication
             h1.publication__title Комментарии
@@ -24,7 +24,7 @@ block main-content
                                 | #{comment.text}
                             button.publication__button.button.button--close-item(type='button')
                                 span.visually-hidden Закрыть строку списка
-                    else    
+                    else
                         li.publication__list-item.publication__list-item--last
                             .publication__header
                                 if (comments.avatar)

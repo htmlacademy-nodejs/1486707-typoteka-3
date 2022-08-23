@@ -26,11 +26,6 @@ link(rel='stylesheet' href='/css/style.min.css')
       padding: 10px;
     }
 
-  mixin insertErrorMessage(messages)
-     if (messages)
-        each message in messages
-          .server-error= message
-
   mixin pagination (page, totalPages, width, prefix)
     -
       let start = page - width;

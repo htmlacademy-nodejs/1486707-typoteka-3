@@ -10,7 +10,18 @@ class CategoryService {
   }
 
   async findAll() {
-    return await this._Category.findAll({
+    const categories = await this._Category.findAll({
+      attributes: [
+        `id`,
+        `name`,
+        [
+          Sequelize.fn(
+              `COUNT`,
+              Sequelize.col(`CategoryId`)
+          ),
+          `count`
+        ]
+      ],
       group: [Sequelize.col(`Category.id`)],
       include: [{
         model: this._ArticlesCategories,
@@ -19,6 +30,8 @@ class CategoryService {
       }],
       raw: true
     });
+
+    return categories;
   }
 }
 

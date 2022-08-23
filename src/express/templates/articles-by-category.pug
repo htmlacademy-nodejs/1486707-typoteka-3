@@ -1,9 +1,9 @@
 extends layout.pug
 
 block header-content
-    include partials/header-components/header-registration.pug
+    include partials/header-main
 
-block main-content 
+block main-content
     main.articles-category
         h1 Бизнес
         section.articles-category__theme-list
@@ -11,31 +11,31 @@ block main-content
             ul.themes
                 li.themes__item
                     a.themes__item-link(href='#')
-                        | Автомобили 
+                        | Автомобили
                         sup 88
                 li.themes__item
                     a.themes__item-link(href='#')
-                        | Удаленная работа 
+                        | Удаленная работа
                         sup 13
                 li.themes__item
                     a.themes__item-link.themes__item-link--active
-                        | Бизнес 
+                        | Бизнес
                         sup 13
                 li.themes__item
                     a.themes__item-link(href='#')
-                        | Путешествия 
+                        | Путешествия
                         sup 13
                 li.themes__item
                     a.themes__item-link.themes__item-link--padding(href='#')
-                        | Дизайн и обустройство 
+                        | Дизайн и обустройство
                         sup 13
                 li.themes__item
                     a.themes__item-link(href='#')
-                        | Производство игрушек 
+                        | Производство игрушек
                         sup 22
                 li.themes__item
                     a.themes__item-link(href='#')
-                        | UX & UI 
+                        | UX & UI
                         sup 22
         section.articles-category__list.preview
             h2.visually-hidden Список превью статей
@@ -53,7 +53,7 @@ block main-content
                         | Если вы сами пишете такие письма — почитайте Ильяхова.
                         | А в этой заметке я расскажу про заклинание, которое от таких писем помогает.
                     a.preview__comment(href='#')
-                        | Комментарии 
+                        | Комментарии
                         span.preview__cloud
                         b.preview__comment-count 12
                 li.preview__item
@@ -69,7 +69,7 @@ block main-content
                         | Если вы сами пишете такие письма — почитайте Ильяхова.
                         | А в этой заметке я расскажу про заклинание, которое от таких писем помогает.
                     a.preview__comment(href='#')
-                        | Комментарии 
+                        | Комментарии
                         span.preview__cloud
                         b.preview__comment-count 12
                 li.preview__item.preview__item--noimage
@@ -86,7 +86,7 @@ block main-content
                         | обеспечения на электронную технику, продаваемую в России. Документ опубликован на официальном сайте
                         | правовой информации.
                     a.preview__comment(href='#')
-                        | Комментарии 
+                        | Комментарии
                         span.preview__cloud
                         b.preview__comment-count 12
                 li.preview__item
@@ -104,6 +104,6 @@ block main-content
                         | Если вы сами пишете такие письма — почитайте Ильяхова.
                         | А в этой заметке я расскажу про заклинание, которое от таких писем помогает.
                     a.preview__comment(href='#')
-                        | Комментарии 
+                        | Комментарии
                         span.preview__cloud
                         b.preview__comment-count 12

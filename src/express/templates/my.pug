@@ -1,9 +1,9 @@
 extends layout.pug
 
 block header-content
-    include partials/header-components/header-dropdown.pug
+    include partials/header-author
 
-block main-content 
+block main-content
     main.main-page.main-page--padding
         section.main-page__notes.notes
             h1.notes__title Мои записи
@@ -21,4 +21,4 @@ block main-content
                             a.notes__item-text(href='#') #{article.announce}
                             button.notes__button.button.button--close-item(type='button')
                                 span.visually-hidden Закрыть строку списка
-                    
+

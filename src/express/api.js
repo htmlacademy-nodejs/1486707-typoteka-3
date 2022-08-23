@@ -20,8 +20,8 @@ class API {
     return response.data;
   }
 
-  getArticles(offset, limit, userId) {
-    return this._load(`/articles`, {params: {offset, limit, userId}});
+  getArticles(offset, limit, commentedLimit, commentsLimit, userId) {
+    return this._load(`/articles`, {params: {offset, limit, commentedLimit, commentsLimit, userId}});
   }
 
   getArticle(id, comments, userId) {

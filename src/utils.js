@@ -33,9 +33,9 @@ const getRandomDate = () => {
   return dayjs(date).format(DATE_FORMAT);
 };
 
-const getRandomSubarray = (items) => {
+const getRandomSubarray = (items, maxCount) => {
   items = items.slice();
-  let count = getRandomInt(1, items.length - 1);
+  let count = getRandomInt(1, maxCount);
   const result = [];
   while (count--) {
     result.push(

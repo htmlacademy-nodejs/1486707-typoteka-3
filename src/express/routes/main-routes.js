@@ -7,22 +7,30 @@ const upload = require(`../middlewares/upload`);
 const {prepareErrors} = require(`../../utils`);
 
 const ARTICLES_PER_PAGE = 8;
+const MOST_COMMENTED_COUNT = 4;
+const RECENT_COMMENTS_COUNT = 3;
 
 mainRouter.get(`/`, async (req, res) => {
   let {page = 1} = req.query;
+  const {user} = req.session;
   page = +page;
 
   const limit = ARTICLES_PER_PAGE;
   const offset = (page - 1) * ARTICLES_PER_PAGE;
+  const commentedLimit = MOST_COMMENTED_COUNT;
+  const commentsLimit = RECENT_COMMENTS_COUNT;
 
-  const [{count, articles}, categories] = await Promise.all([
-    api.getArticles(offset, limit),
+  const [{current, commented}, categories] = await Promise.all([
+    api.getArticles(offset, limit, commentedLimit, commentsLimit),
     api.getCategories()
   ]);
 
-  const totalPages = Math.ceil(count / ARTICLES_PER_PAGE);
+  const currentArticles = current.articlesData;
+  const totalPages = Math.ceil(current.count / ARTICLES_PER_PAGE);
 
-  res.render(`main.pug`, {articles, page, totalPages, categories});
+  return currentArticles.length
+    ? res.render(`main.pug`, {currentArticles, commented, page, totalPages, categories, user})
+    : res.render(`main-empty.pug`, {user});
 });
 
 mainRouter.get(`/register`, (req, res) => res.render(`sign-up.pug`));
@@ -49,11 +57,8 @@ mainRouter.post(`/register`, upload.single(`avatar`), async (req, res) => {
     email: body.email,
     password: body.password,
     passwordRepeated: body[`repeat-password`],
+    avatar: file ? file.filename : body[`avatar`]
   };
-
-  if (file && file.filename) {
-    userData[`avatar`] = file.filename;
-  }
 
   try {
     await api.createUser(userData);

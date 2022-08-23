@@ -13,11 +13,19 @@ module.exports = (app, articleService, commentsService) => {
   app.use(`/articles`, route);
 
   route.get(`/`, async (req, res) => {
-    const {offset, limit} = req.query;
-    const result = limit || offset
+    const {offset, limit, commentedLimit} = req.query;
+
+    const articles = {};
+
+    articles.current = limit || offset
       ? await articleService.findPage({limit, offset})
       : await articleService.findAll({withComments: true});
-    return res.status(HttpCode.OK).json(result);
+
+    if (commentedLimit) {
+      articles.commented = await articleService.findLimit({limit: commentedLimit, withComments: true});
+    }
+
+    return res.status(HttpCode.OK).json(articles);
   });
 
   route.post(`/`, articleValidator, async (req, res) => {
