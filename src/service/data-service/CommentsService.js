@@ -1,8 +1,11 @@
 'use strict';
 
+const Aliase = require(`../models/aliase`);
+
 class CommentsService {
   constructor(sequelize) {
     this._Comment = sequelize.models.Comment;
+    this._User = sequelize.models.User;
   }
 
   async findAll(articleId) {
@@ -36,58 +39,24 @@ class CommentsService {
     return !!deletedRows;
   }
 
-  async findLimit({limit, withComments}) {
-    if (!withComments) {
-      const options = {
-        limit,
-        include: [
-          Aliase.CATEGORIES
-        ],
-        order: [
-          [`createdAt`, `DESC`]
-        ]
-      };
-
-      return await this._Article.findAll(options);
-    }
-
+  async findLimit({limit}) {
     const options = {
-      subQuery: false,
-      attributes: {
-        include: [
-          [this._sequelize.fn(`COUNT`, this._sequelize.col(`comments.id`)), `commentsCount`]
-        ]
-      },
+      limit,
       include: [
         {
-          model: this._Comment,
-          as: Aliase.COMMENTS,
-          attributes: [],
-        },
-        {
-          model: this._Category,
-          as: Aliase.CATEGORIES,
-          attributes: [`id`, `name`]
+          model: this._User,
+          as: Aliase.USERS,
+          attributes: {
+            exclude: [`passwordHash`]
+          }
         }
       ],
-      group: [
-        `Article.id`,
-        `categories.id`,
-        `categories->ArticlesCategories.ArticleId`,
-        `categories->ArticlesCategories.CategoryId`
-      ],
       order: [
-        [this._sequelize.fn(`COUNT`, this._sequelize.col(`comments.id`)), `DESC`]
+        [`createdAt`, `DESC`]
       ]
     };
 
-    let articles = await this._Article.findAll(options);
-
-    articles = articles
-      .map((article) => article.get())
-      .filter((article) => article.commentsCount > 0);
-
-    return articles.slice(0, limit);
+    return await this._Comment.findAll(options);
   }
 }
 

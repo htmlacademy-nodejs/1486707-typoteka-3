@@ -8,7 +8,7 @@ const {prepareErrors} = require(`../../utils`);
 
 const ARTICLES_PER_PAGE = 8;
 const MOST_COMMENTED_COUNT = 4;
-const RECENT_COMMENTS_COUNT = 3;
+const RECENT_COMMENTS_COUNT = 4;
 
 mainRouter.get(`/`, async (req, res) => {
   let {page = 1} = req.query;
@@ -20,16 +20,16 @@ mainRouter.get(`/`, async (req, res) => {
   const commentedLimit = MOST_COMMENTED_COUNT;
   const commentsLimit = RECENT_COMMENTS_COUNT;
 
-  const [{current, commented}, categories] = await Promise.all([
+  const [{current, commented, recentComments}, categories] = await Promise.all([
     api.getArticles(offset, limit, commentedLimit, commentsLimit),
-    api.getCategories()
+    api.getCategories({withCount: true})
   ]);
 
   const currentArticles = current.articlesData;
   const totalPages = Math.ceil(current.count / ARTICLES_PER_PAGE);
 
   return currentArticles.length
-    ? res.render(`main.pug`, {currentArticles, commented, page, totalPages, categories, user})
+    ? res.render(`main.pug`, {currentArticles, commented, recentComments, page, totalPages, categories, user})
     : res.render(`main-empty.pug`, {user});
 });
 

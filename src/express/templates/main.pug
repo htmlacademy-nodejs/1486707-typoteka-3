@@ -13,7 +13,7 @@ block main-content
             ul.themes
                 each category of categories
                   li.themes__item
-                    a.themes__item-link(href='#')
+                    a.themes__item-link(href=`/articles/category/${category.id}`)
                       | #{category.name}
                       sup #{category.count}
         .main-page__section-flex
@@ -24,7 +24,7 @@ block main-content
                 ul.hot__list
                     each article of commented
                       li.hot__list-item
-                          a.hot__list-link(href='#')
+                          a.hot__list-link(href=`/articles/${article.id}`)
                               | #{article.announce}
                               sup.hot__link-sup #{article.commentsCount}
             section.main-page__last.last
@@ -32,26 +32,11 @@ block main-content
                     | Последние комментарии
                     span.last__icon.last__icon--cloud
                 ul.last__list
-                    li.last__list-item
-                        img.last__list-image(src='/img/avatar-small-1.png' width='20' height='20' alt='Аватар пользователя')
-                        b.last__list-name Анна Артамонова
-                        a.last__list-link(href='#')
-                            | Сервис аренды жилья Airbnb стал глобальным партнером Международного
-                            | олимпийского комитета
-                            | (МОК) на девять лет, в течение которых пройдет пять Олимпиад, в том числе в Токио в 2020 году.
-                    li.last__list-item
-                        img.last__list-image(src='/img/avatar-small-2.png' width='20' height='20' alt='Аватар пользователя')
-                        b.last__list-name Александр Петров
-                        a.last__list-link(href='#')
-                            | Главреды «Дождя», Forbes и других СМИ попросили Роскомнадзор
-                            | разъяснить штрафы за ссылки на
-                            | сайты с матом
-                    li.last__list-item.last__list-item--end
-                        img.last__list-image(src='/img/avatar-small-3.png' width='20' height='20' alt='Аватар пользователя')
-                        b.last__list-name Игорь Шманский
-                        a.last__list-link(href='#')
-                            | Что-то все электрокары в последнее время все на одно лицо
-                            | делаются))
+                    each comment of recentComments
+                        li.last__list-item
+                            img.last__list-image(src=`/img/${comment.users.avatar}` width='20' height='20' alt='Аватар пользователя')
+                            b.last__list-name #{`${comment.users.name} ${comment.users.surname}`}
+                            a.last__list-link(href=`/articles/${comment.articleId}/comments`) #{comment.text}
         section.main-page__list.preview
             h2.visually-hidden Список превью статей
             ul.preview__list
@@ -60,16 +45,16 @@ block main-content
                         ul.preview__breadcrumbs
                             each category of article.categories
                                 li.preview__breadcrumbs-item
-                                    a.preview__breadcrumbs-link(href='#') #{category.name}
+                                    a.preview__breadcrumbs-link(href=`/articles/category/${category.id}`) #{category.name}
                         -
                         if (article.picture)
                             .preview__background
                                 img.preview__background-image(src=`./img/${article.picture}` width='460' height='240' alt=article.title)
-                        time.preview__time(datetime='2019-03-21T20:33') #{article.createdDate}
+                        time.preview__time(datetime=article.createdAt) #{article.createdAt}
                         h3.preview__name
-                            a.preview__name-link(href='#') #{article.announce}
+                            a.preview__name-link(href=`/articles/${article.id}`) #{article.announce}
                         p.preview__text #{article.text}
-                        a.preview__comment(href='#')
+                        a.preview__comment(href=`/articles/${article.id}/comments`)
                             | Комментарии
                             span.preview__cloud
                             b.preview__comment-count #{(article.comments.length) || 0}

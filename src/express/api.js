@@ -28,21 +28,16 @@ class API {
     return this._load(`/articles/${id}`, {params: {comments, userId}});
   }
 
-  async getAllComments() {
-    const articles = await this._load(`/articles`);
-
-    const commentsData = articles.reduce((comments, article) => {
-      return [...comments, ...article.comments];
-    }, []);
-    return commentsData;
-  }
-
   getComments(id) {
     return this._load(`/articles/${id}/comments`);
   }
 
-  getCategories() {
-    return this._load(`/categories`);
+  getCategory({categoryId, limit, offset}) {
+    return this._load(`/categories/${categoryId}`, {params: {limit, offset}});
+  }
+
+  getCategories(withCount) {
+    return this._load(`/categories`, {params: {withCount}});
   }
 
   search(query) {

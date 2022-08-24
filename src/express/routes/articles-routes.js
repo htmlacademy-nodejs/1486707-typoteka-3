@@ -9,6 +9,8 @@ const upload = require(`../middlewares/upload`);
 const auth = require(`../middlewares/auth`);
 const {prepareErrors, ensureArray} = require(`../../utils`);
 
+const ARTICLES_PER_PAGE = 8;
+
 const articlesRouter = new Router();
 
 const getAddArticleData = () => {
@@ -28,9 +30,32 @@ const getViewArticleData = (id) => {
   return api.getArticle({id, withComments: true});
 };
 
-articlesRouter.get(`/category/:id`, auth, (req, res) => {
+articlesRouter.get(`/category/:categoryId`, async (req, res) => {
   const {user} = req.session;
-  res.render(`articles-by-category.pug`, {user});
+  const {categoryId} = req.params;
+
+  let {page = 1} = req.query;
+  page = +page;
+
+  const limit = ARTICLES_PER_PAGE;
+  const offset = (page - 1) * ARTICLES_PER_PAGE;
+
+  const [categories, {category, count, articlesByCategory}] = await Promise.all([
+    api.getCategories({withCount: true}),
+    api.getCategory({categoryId, limit, offset})
+  ]);
+
+  const totalPages = Math.ceil(count / ARTICLES_PER_PAGE);
+
+  const articles = {
+    category,
+    current: articlesByCategory
+  };
+
+  const currentCategoryId = category.id
+  res.render(`articles-by-category.pug`, {
+    fullView: true, articles, page, totalPages, categories, user, currentCategoryId
+  });
 });
 
 articlesRouter.get(`/add`, auth, csrfProtection, async (req, res) => {

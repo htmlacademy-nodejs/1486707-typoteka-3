@@ -13,7 +13,7 @@ module.exports = (app, articleService, commentsService) => {
   app.use(`/articles`, route);
 
   route.get(`/`, async (req, res) => {
-    const {offset, limit, commentedLimit} = req.query;
+    const {offset, limit, commentedLimit, commentsLimit} = req.query;
 
     const articles = {};
 
@@ -25,6 +25,9 @@ module.exports = (app, articleService, commentsService) => {
       articles.commented = await articleService.findLimit({limit: commentedLimit, withComments: true});
     }
 
+    if (commentsLimit) {
+      articles.recentComments = await commentsService.findLimit({limit: commentsLimit});
+    }
     return res.status(HttpCode.OK).json(articles);
   });
 
