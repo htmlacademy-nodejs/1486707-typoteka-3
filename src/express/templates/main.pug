@@ -36,7 +36,7 @@ block main-content
                         li.last__list-item
                             img.last__list-image(src=`/img/${comment.users.avatar}` width='20' height='20' alt='Аватар пользователя')
                             b.last__list-name #{`${comment.users.name} ${comment.users.surname}`}
-                            a.last__list-link(href=`/articles/${comment.articleId}/comments`) #{comment.text}
+                            a.last__list-link(href=`/articles/${comment.articleId}`) #{comment.text}
         section.main-page__list.preview
             h2.visually-hidden Список превью статей
             ul.preview__list
@@ -54,8 +54,8 @@ block main-content
                         h3.preview__name
                             a.preview__name-link(href=`/articles/${article.id}`) #{article.announce}
                         p.preview__text #{article.text}
-                        a.preview__comment(href=`/articles/${article.id}/comments`)
+                        a.preview__comment(href=`/articles/${article.id}`)
                             | Комментарии
                             span.preview__cloud
                             b.preview__comment-count #{(article.comments.length) || 0}
-            +pagination(page, totalPages, 2, `?`)
+        +pagination(page, totalPages, 2, `?`)

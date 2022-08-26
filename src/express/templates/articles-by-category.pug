@@ -35,7 +35,7 @@ block main-content
                         h3.preview__name
                             a.preview__name-link(href=`/articles/${article.id}`) #{article.announce}
                         p.preview__text #{article.text}
-                        a.preview__comment(href=`/articles/${article.id}/comments`)
+                        a.preview__comment(href=`/articles/${article.id}`)
                             | Комментарии
                             span.preview__cloud
                             b.preview__comment-count #{(article.comments.length) || 0}
