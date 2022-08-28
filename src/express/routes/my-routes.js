@@ -12,11 +12,10 @@ myRouter.get(`/`, auth, async (req, res) => {
   res.render(`my.pug`, {articles});
 });
 
-// isn't implemented yet
-// myRouter.get(`/comments`, async (req, res) => {
-//   const comments = await api.getAllComments();
-//   res.render(`comments.pug`, {comments});
-// });
+myRouter.get(`/comments`, async (req, res) => {
+  const comments = await api.getComments();
+  res.render(`comments.pug`, {comments});
+});
 
 myRouter.get(`/categories`, auth, async (req, res) => {
   const categories = await api.getCategories();

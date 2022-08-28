@@ -5,12 +5,12 @@ block header-content
 
 block main-content
     main.articles-category
-        h1 Бизнес
+        h1 #{currentCategory.name}
         section.articles-category__theme-list
             h2.visually-hidden Список тем
             ul.themes
                 each category of categories
-                    if (category.id === currentCategoryId)
+                    if (category.id === currentCategory.id)
                         li.themes__item
                             a.themes__item-link.themes__item-link--active #{category.name}
                                 sup #{category.count}
