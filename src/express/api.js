@@ -78,6 +78,26 @@ class API {
       data: {email, password}
     });
   }
+
+  createCategory(data) {
+    return this._load(`/categories`, {
+      method: HttpMethod.POST,
+      data
+    });
+  }
+
+  updateCategory(id, data) {
+    return this._load(`/categories/${id}`, {
+      method: HttpMethod.PUT,
+      data
+    });
+  }
+
+  deleteCategory(id) {
+    return this._load(`/categories/${id}`, {
+      method: HttpMethod.DELETE,
+    });
+  }
 }
 
 const defaultAPI = new API(defaultUrl, TIMEOUT);

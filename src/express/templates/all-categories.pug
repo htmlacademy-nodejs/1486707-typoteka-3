@@ -8,7 +8,7 @@ block main-content
         section.main-page__category.category
             h1.category__title Категории
             .category__add-form
-                form(action='#' method='POST')
+                form(action='/my/categories/' method='POST')
                     input#add-form-add-category(type='text' name='add-category' placeholder='Новая категория')
                     label(for='add-form-add-category')
                         span.visually-hidden Добавить категорию
@@ -16,9 +16,9 @@ block main-content
             ul.category__list
                 each category in categories
                     li.category__list-item
-                        form(action='#' method='POST')
-                            input#category.id(type='text' name=`${category.name}` value=`${category.name}`)
-                            label(for=`${category.id}`)
+                        form(id=`update-button` action=`/my/categories/${category.id}` method='POST')
+                            input(id=category.id type='text' name='category-name' value=category.name)
+                            label(for=category.id)
                                 span.visually-hidden Редактировать категорию
-                            button.category__button.button.button--category(type='submit') Сохранить
-                            button.category__button.button.button--category(type='button') Удалить
+                            button.category__button.button.button--category(form=`update-button` type='submit') Сохранить
+                            a.category__button.button.button--category(href=`/my/categories/${category.id}`) Удалить

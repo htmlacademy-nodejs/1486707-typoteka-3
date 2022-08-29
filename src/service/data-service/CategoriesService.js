@@ -84,6 +84,28 @@ class CategoryService {
 
     return {count, articlesByCategory: rows};
   }
+
+  async create(category) {
+    const newCategory = await this._Category.create(category);
+    return newCategory.get();
+  }
+
+  async update(id, category) {
+    const [affectedRows] = await this._Category.update(
+        category,
+        {
+          where: {id}
+        }
+    );
+    return !!affectedRows;
+  }
+
+  async drop(id) {
+    const deletedRows = await this._Category.destroy({
+      where: {id}
+    });
+    return !!deletedRows;
+  }
 }
 
 module.exports = CategoryService;

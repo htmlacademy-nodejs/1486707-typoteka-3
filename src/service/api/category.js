@@ -29,4 +29,26 @@ module.exports = (app, service) => {
         articlesByCategory
       });
   });
+
+  route.post(`/`, async (req, res) => {
+    const newCategory = req.body;
+
+    const category = await service.create(newCategory);
+    return res.status(HttpCode.OK).json(category);
+  });
+
+  route.put(`/:categoryId`, async (req, res) => {
+    const {categoryId} = req.params;
+    const newCategory = req.body;
+
+    const updatedCategory = await service.update(categoryId, newCategory);
+    return res.status(HttpCode.OK).json(updatedCategory);
+  });
+
+  route.delete(`/:categoryId`, async (req, res) => {
+    const {categoryId} = req.params;
+    const deletedCategory = await service.drop(categoryId);
+
+    return res.status(HttpCode.OK).json(deletedCategory);
+  });
 };
