@@ -6,6 +6,7 @@ class CommentsService {
   constructor(sequelize) {
     this._Comment = sequelize.models.Comment;
     this._User = sequelize.models.User;
+    this._Article = sequelize.models.Article;
   }
 
   async findAll(articleId) {
@@ -70,6 +71,10 @@ class CommentsService {
           attributes: {
             exclude: [`passwordHash`]
           }
+        },
+        {
+          model: this._Article,
+          as: Aliase.ARTICLES,
         }
       ],
       order: [

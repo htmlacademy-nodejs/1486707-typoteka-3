@@ -1,9 +1,32 @@
 extends layout.pug
 
 block header-content
-    include partials/header-main
+    if (user && user.id === 1)
+      include partials/header-author
+    else if (user && !user.id === 1)
+      include partials/header-main
+    else
+      include partials/header-registration
 
 block main-content
+    -
+      const TypeFormatDate = {
+        ARTICLE: 'article',
+        COMMENT: 'comment'
+      };
+      const formatDate = (type, dateString) => {
+        const date = new Date(dateString);
+        let options;
+        switch (type) {
+          case TypeFormatDate.ARTICLE:
+            options = {day: '2-digit', month: '2-digit', year: 'numeric'};
+            break;
+          case TypeFormatDate.COMMENT:
+            options = {day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'};
+            break;
+        }
+        return date.toLocaleString('ru-RU', options);
+      }
     main.articles-category
         h1 #{currentCategory.name}
         section.articles-category__theme-list
@@ -31,7 +54,7 @@ block main-content
                         if (article.picture)
                             .preview__background
                                img.preview__background-image(src=`/img/${article.picture}` width='460' height='240' alt=article.title)
-                        time.preview__time(datetime=article.createdAt) #{article.createdAt}
+                        time.preview__time(datetime=formatDate(TypeFormatDate.ARTICLE, article.createdAt)) #{formatDate(TypeFormatDate.ARTICLE, article.createdAt)}
                         h3.preview__name
                             a.preview__name-link(href=`/articles/${article.id}`) #{article.announce}
                         p.preview__text #{article.text}

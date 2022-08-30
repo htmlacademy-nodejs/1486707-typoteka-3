@@ -1,7 +1,12 @@
 extends layout.pug
 
 block header-content
-    include partials/header-main
+    if (user && user.id === 1)
+      include partials/header-author-edit
+    else if (user && !user.id === 1)
+      include partials/header-main
+    else
+      include partials/header-registration
 
 block main-content
     -
@@ -57,7 +62,7 @@ block main-content
                                     .comments__text
                                         .comments__head
                                             p #{`${comment.users.name} ${comment.users.surname}`} •
-                                            time.comments__date(datetime=comment.createdAt) #{comment.createdAt}
+                                            time.comments__date(datetime=formatDate(TypeFormatDate.COMMENT, comment.createdAt)) #{formatDate(TypeFormatDate.COMMENT, comment.createdAt)}
                                         p.comments__message #{comment.text}
                     else
                         h3 Комментарии отсутствуют

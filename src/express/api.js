@@ -20,7 +20,7 @@ class API {
     return response.data;
   }
 
-  getArticles(offset, limit, commentedLimit, commentsLimit, userId) {
+  getArticles({offset, limit, commentedLimit, commentsLimit, userId}) {
     return this._load(`/articles`, {params: {offset, limit, commentedLimit, commentsLimit, userId}});
   }
 
@@ -30,6 +30,16 @@ class API {
 
   getComments(id) {
     return this._load(`/articles/${id}/comments`);
+  }
+
+  getAllComments() {
+    return this._load(`/articles/comments`);
+  }
+
+  deleteComment(articleId, commentId) {
+    return this._load(`/articles/${articleId}/comments/${commentId}`, {
+      method: HttpMethod.DELETE
+    });
   }
 
   getCategory({categoryId, limit, offset}) {
@@ -55,6 +65,12 @@ class API {
     return this._load(`/articles/${id}`, {
       method: HttpMethod.PUT,
       data
+    });
+  }
+
+  deleteArticle(id) {
+    return this._load(`/articles/${id}`, {
+      method: HttpMethod.DELETE,
     });
   }
 

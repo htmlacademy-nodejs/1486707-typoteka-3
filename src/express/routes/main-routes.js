@@ -21,7 +21,7 @@ mainRouter.get(`/`, async (req, res) => {
   const commentsLimit = RECENT_COMMENTS_COUNT;
 
   const [{current, commented, recentComments}, categories] = await Promise.all([
-    api.getArticles(offset, limit, commentedLimit, commentsLimit),
+    api.getArticles({offset, limit, commentedLimit, commentsLimit}),
     api.getCategories({withCount: true})
   ]);
 

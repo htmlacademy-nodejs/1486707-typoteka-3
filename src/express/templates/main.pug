@@ -1,7 +1,12 @@
 extends layout.pug
 
 block header-content
-    include partials/header-main
+    if (user && user.id === 1)
+      include partials/header-author
+    else if (user && !user.id === 1)
+      include partials/header-main
+    else
+      include partials/header-registration
 
 block main-content
     -

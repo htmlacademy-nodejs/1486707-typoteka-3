@@ -1,8 +1,12 @@
 extends layout.pug
 
 block header-content
-    include partials/header-main
-
+    if (user && user.id === 1)
+        include partials/header-author
+    else if (user && !user.id === 1)
+        include partials/header-main
+    else
+      include partials/header-registration
 block main-content
     main.main-page.main-page--padding
         section.main-page__category.category
@@ -13,12 +17,18 @@ block main-content
                     label(for='add-form-add-category')
                         span.visually-hidden Добавить категорию
                     button.category__button.button.button--category(type='submit') Добавить
+                if (validationMessages)
+                    .form__validation-error
+                      p.form__error-message При регистрации произошли ошибки:
+                      ul.form__errors
+                        each message in validationMessages
+                          li.form__error #{message}
             ul.category__list
                 each category in categories
                     li.category__list-item
-                        form(id=`update-button` action=`/my/categories/${category.id}` method='POST')
+                        form(action=`/my/categories/${category.id}` method='POST')
                             input(id=category.id type='text' name='category-name' value=category.name)
                             label(for=category.id)
                                 span.visually-hidden Редактировать категорию
-                            button.category__button.button.button--category(form=`update-button` type='submit') Сохранить
+                            button.category__button.button.button--category(type='submit') Сохранить
                             a.category__button.button.button--category(href=`/my/categories/${category.id}`) Удалить

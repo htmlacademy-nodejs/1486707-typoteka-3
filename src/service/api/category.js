@@ -2,8 +2,12 @@
 
 const {Router} = require(`express`);
 const {HttpCode} = require(`../../constants`);
+const categoryExists = require(`../middlewares/categoryExists`);
+const categoryValidator = require(`../middlewares/categoryValidator`);
+const categoryHasArticles = require(`../middlewares/categoryHasArticles`);
 
 const route = new Router();
+
 
 module.exports = (app, service) => {
   app.use(`/categories`, route);
@@ -30,14 +34,14 @@ module.exports = (app, service) => {
       });
   });
 
-  route.post(`/`, async (req, res) => {
+  route.post(`/`, categoryValidator, async (req, res) => {
     const newCategory = req.body;
 
     const category = await service.create(newCategory);
     return res.status(HttpCode.OK).json(category);
   });
 
-  route.put(`/:categoryId`, async (req, res) => {
+  route.put(`/:categoryId`, [categoryExists(service), categoryValidator], async (req, res) => {
     const {categoryId} = req.params;
     const newCategory = req.body;
 
@@ -45,10 +49,10 @@ module.exports = (app, service) => {
     return res.status(HttpCode.OK).json(updatedCategory);
   });
 
-  route.delete(`/:categoryId`, async (req, res) => {
+  route.delete(`/:categoryId`, [categoryExists(service), categoryHasArticles(service)], async (req, res) => {
     const {categoryId} = req.params;
-    const deletedCategory = await service.drop(categoryId);
 
+    const deletedCategory = await service.drop(categoryId);
     return res.status(HttpCode.OK).json(deletedCategory);
   });
 };
