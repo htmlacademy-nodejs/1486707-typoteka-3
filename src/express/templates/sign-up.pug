@@ -1,7 +1,7 @@
 extends layout.pug
 
 block header-content
-    include partials/header-components/header-popup.pug
+    include partials/header-registration
 
 block main-content
     main
@@ -39,7 +39,7 @@ block main-content
                             a.form__avatar.avatar
                                 img(src='/img/icons/smile.svg' alt='аватар пользователя')
                             label
-                                input.visually-hidden(type='file' name='upload')
+                                input.visually-hidden(type='file' name='avatar')
                                 | Загрузить фото профиля
                         button.form__submit-btn.form__submit-btn--register.button.button--colored(type='submit') Зарегистрироваться
 

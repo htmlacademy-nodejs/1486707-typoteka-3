@@ -30,7 +30,7 @@ const schema = Joi.object({
   articleText: Joi.string().max(1000).messages({
     'string.max': ErrorArticleMessage.TEXT
   }),
-  picture: Joi.string(),
+  picture: [Joi.string().optional(), Joi.allow(null)],
   userId: Joi.number().integer().positive().required().messages({
     'number.base': ErrorArticleMessage.USER_ID
   })

@@ -11,11 +11,12 @@ const {getLogger} = require(`../lib/logger`);
 const initDatabase = require(`../lib/init-db`);
 const passwordUtils = require(`../lib/password`);
 
-const DEFAULT_COUNT = 5;
+const DEFAULT_COUNT = 10;
 const MAX_COUNT = 1000;
 const MAX_COUNT_ERROR_MESSAGE = `Не больше ${MAX_COUNT} публикаций`;
 const MAX_TEXT_SENTENCES = 5;
 const MAX_COMMENTS = 4;
+const MAX_CATEGORIES = 5;
 
 const FILE_ANNOUNCES_PATH = `./data/sentences.txt`;
 const FILE_TITLES_PATH = `./data/titles.txt`;
@@ -42,14 +43,15 @@ const generateComments = (count, commentsData, users) => (
       .join(` `),
   }))
 );
-const generateArticles = (count, titles, announces, categories, comments, users) => {
+const generateArticles = (count, titles, announces, categories, comments, users, pictures) => {
   return Array(count).fill({}).map(() => ({
     user: users[getRandomInt(0, users.length - 1)].email,
     title: titles[getRandomInt(1, titles.length - 1)],
     announce: announces[getRandomInt(1, announces.length - 1)],
     articleText: arrayShuffle(announces).slice(1, MAX_TEXT_SENTENCES).join(` `),
-    categories: getRandomSubarray(categories),
-    comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments, users)
+    categories: getRandomSubarray(categories, MAX_CATEGORIES),
+    comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments, users),
+    picture: pictures[getRandomInt(1, pictures.length - 1)]
   })
   );
 };
@@ -77,22 +79,30 @@ module.exports = {
         surname: `Иванов`,
         email: `ivanov@example.com`,
         passwordHash: await passwordUtils.hash(`ivanov`),
-        avatar: `ivanov.jpg`
+        avatar: `avatar-1.png`
       },
       {
         name: `Пётр`,
         surname: `Петров`,
         email: `petrov@example.com`,
         passwordHash: await passwordUtils.hash(`petrov`),
-        avatar: `petrov.jpg`
+        avatar: `avatar-2.png`
       },
       {
         name: `Сидор`,
         surname: `Сидоров`,
         email: `sidorov@example.com`,
         passwordHash: await passwordUtils.hash(`sidorov`),
-        avatar: `sidorov.jpg`
+        avatar: `avatar-3.png`
       },
+    ];
+
+    const pictures = [
+      `forest@1x.jpg`,
+      `sea@1x.jpg`,
+      `skyscraper@1x.jpg`,
+      null,
+      null
     ];
 
     const [count] = args;
@@ -103,7 +113,7 @@ module.exports = {
     }
 
     const countArticles = Number.parseInt(count, 10) || DEFAULT_COUNT;
-    const articles = generateArticles(countArticles, titles, announces, categories, comments, users);
+    const articles = generateArticles(countArticles, titles, announces, categories, comments, users, pictures);
 
     return initDatabase(sequelize, {categories, articles, users});
   }

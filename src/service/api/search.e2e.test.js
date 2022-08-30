@@ -43,7 +43,7 @@ describe(`Search REST API`, () => {
       const response = await request
       .get(`/search`)
       .query({
-        query: `Как начать программировать`
+        query: `Как начать`
       });
       return expect(response.statusCode).toBe(HttpCode.OK);
     });
@@ -52,7 +52,7 @@ describe(`Search REST API`, () => {
       const response = await request
       .get(`/search`)
       .query({
-        query: `Как начать программировать`
+        query: `Как начать`
       });
       return expect(response.body.length).toBe(2);
     });

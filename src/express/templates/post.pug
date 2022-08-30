@@ -1,76 +1,104 @@
 extends layout.pug
 
 block header-content
-    include partials/header-components/header-dropdown.pug
+    if (user && user.id === 1)
+      include partials/header-author
+    else if (user && !user.id === 1)
+      include partials/header-main
+    else
+      include partials/header-registration
 
 block main-content
+    -
+      const TypeFormatDate = {
+        ARTICLE: 'article',
+        COMMENT: 'comment'
+      };
+      const formatDate = (type, dateString) => {
+        const date = new Date(dateString);
+        let options;
+        switch (type) {
+          case TypeFormatDate.ARTICLE:
+            options = {day: '2-digit', month: '2-digit', year: 'numeric'};
+            break;
+          case TypeFormatDate.COMMENT:
+            options = {day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'};
+            break;
+        }
+        return date.toLocaleString('ru-RU', options);
+      }
     main
         - var currentDate = Date.now().toString()
         section
             .popup.popup--new-publication.popup--anti
                 .new-publication
-                    form(action='/articles/add' method='POST', enctype="multipart/form-data")
-                        input(type="hidden" name="_csrf" value=csrfToken)
-                        .new-publication__header
-                            if (article)
-                                h1 #{article.title}
-                            else
-                                h1 Новая публикация
+                      form(action=`${(article && article.id) ? `/articles/edit/${article.id}` : '/articles/add'}` method='POST', enctype="multipart/form-data")
+                            input(type="hidden" name="_csrf" value=csrfToken)
+                            .new-publication__header
+                                if (article)
+                                    h1 #{article.title}
+                                else
+                                    h1 Новая публикация
                                 .new-publication__date-form
                                     if (article)
                                         h3 Дата публикации
                                         .new-publication__date-form-division
                                             .new-publication__date-block
                                                 label(for='new-publication-date' aria-label='Календарь')
-                                                input#new-publication-date(type='text' name='date' placeholder=article.createDate)
+                                                input#new-publication-date(type='text' name='date' placeholder=formatDate(TypeFormatDate.ARTICLE, article.createdAt))
                                     else
                                         h3 Дата публикации
                                         .new-publication__date-form-division
                                             .new-publication__date-block
-                                                label(for='new-publication-date' aria-label='Календарь')
-                                                input#new-publication-date(type='text' name='date' placeholder='2019-03-21')
-                            button.new-publication__button.button.button--colored(type='submit') Опубликовать
-                        a.popup__button.button.button--popup-close(aria-label='Закрыть окно')
-                            | Закрыть
-                            | окно
-                        .new-publication__form.form
-                            .form__wrapper.form__wrapper--intro
-                                .form__field
-                                    label
-                                        if (article)
-                                            input(type='text' name='title' placeholder='Заголовок' required='' value=article.title)
-                                        else
-                                            input(type='text' name='title' placeholder='Заголовок' required='')
-                                .form__field.form__field--post-image
-                                    label
-                                        if (article && article.photo)
-                                            input#image-name-field(type='text' name='photo' placeholder='Фотография' readonly='' value=`./img/${article.photo}`)
-                                        else
-                                            input#image-name-field(type='text' name='photo' placeholder='Фотография' readonly='')
-                                    .form__image-loader.form__image-loader--publication
+                                                 label(for='new-publication-date' aria-label='Календарь')
+                                                 input#new-publication-date(type='text' name='date' placeholder=currentDate)
+                                button.new-publication__button.button.button--colored(type='submit') Опубликовать
+                            a.popup__button.button.button--popup-close(aria-label='Закрыть окно')
+                                | Закрыть
+                                | окно
+                            .new-publication__form.form
+                                .form__wrapper.form__wrapper--intro
+                                    .form__field
                                         label
-                                            input.visually-hidden(type='file' name='upload')
-                                            | Обзор
-                                .new-publication__category-wrapper
-                                    a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
-                            .form__wrapper.form__wrapper--text
-                                .form__field.form__field--publication-text
-                                    label
-                                        if (article)
-                                            textarea(rows='5' name='announcement' placeholder='Анонс публикации') #{article.announce}
-                                        else
-                                            textarea(rows='5' name='announcement' placeholder='Анонс публикации')
-                                .form__field.form__field--publication-text
-                                    label
-                                        if (article)
-                                            textarea(rows='10' name='full-text' placeholder='Полный текст публикации') #{article.articleText}
-                                        else
-                                            textarea(rows='10' name='full-text' placeholder='Полный текст публикации')
-                                .server-error-container
-                                        if (validationMessages)
-                                            .form__validation-error
-                                                p.form__error-message При регистрации произошли ошибки:
-                                                ul.form__errors
-                                                    each message in validationMessages
-                                                        li.form__error #{message}
+                                            if (article)
+                                                input(type='text' name='title' placeholder='Заголовок' required='' value=article.title)
+                                            else
+                                                input(type='text' name='title' placeholder='Заголовок' required='')
+                                    .form__field.form__field--post-image
+                                        label
+                                            if (article && article.photo)
+                                                input#image-name-field(type='text' name='photo' placeholder='Фотография' readonly='' value=`./img/${article.photo}`)
+                                            else
+                                                input#image-name-field(type='text' name='photo' placeholder='Фотография' readonly='')
+                                        .form__image-loader.form__image-loader--publication
+                                            label
+                                                input.visually-hidden(type='file' name='upload')
+                                                | Обзор
+                                    .new-publication__category-wrapper
+                                        if (categories.length)
+                                            each category in categories
+                                                .new-publication__checkbox
+                                                    input(id=category.id type='checkbox' name=`categories[${category.id}_]`)
+                                                    label(for=category.id) #{category.name}
+                                        a.new-publication__form-link.button.button--transparent(href='/my/categories') Добавить категорию
+                                .form__wrapper.form__wrapper--text
+                                    .form__field.form__field--publication-text
+                                        label
+                                            if (article)
+                                                textarea(rows='5' name='announcement' placeholder='Анонс публикации') #{article.announce}
+                                            else
+                                                textarea(rows='5' name='announcement' placeholder='Анонс публикации')
+                                    .form__field.form__field--publication-text
+                                        label
+                                            if (article)
+                                                textarea(rows='10' name='full-text' placeholder='Полный текст публикации') #{article.articleText}
+                                            else
+                                                textarea(rows='10' name='full-text' placeholder='Полный текст публикации')
+                                    .server-error-container
+                                            if (validationMessages)
+                                                .form__validation-error
+                                                    p.form__error-message При регистрации произошли ошибки:
+                                                    ul.form__errors
+                                                        each message in validationMessages
+                                                            li.form__error #{message}
 

@@ -13,17 +13,34 @@ module.exports = (app, articleService, commentsService) => {
   app.use(`/articles`, route);
 
   route.get(`/`, async (req, res) => {
-    const {offset, limit} = req.query;
-    const result = limit || offset
+    const {offset, limit, commentedLimit, commentsLimit} = req.query;
+
+    const articles = {};
+
+    articles.current = limit || offset
       ? await articleService.findPage({limit, offset})
       : await articleService.findAll({withComments: true});
-    return res.status(HttpCode.OK).json(result);
+
+    if (commentedLimit) {
+      articles.commented = await articleService.findLimit({limit: commentedLimit, withComments: true});
+    }
+
+    if (commentsLimit) {
+      articles.recentComments = await commentsService.findLimit({limit: commentsLimit});
+    }
+    return res.status(HttpCode.OK).json(articles);
   });
 
   route.post(`/`, articleValidator, async (req, res) => {
     const article = await articleService.create(req.body);
 
     return res.status(HttpCode.CREATED).json(article);
+  });
+
+  route.get(`/comments`, async (req, res) => {
+    const comments = await commentsService.findLimit({limit: null});
+
+    return res.status(HttpCode.OK).json(comments);
   });
 
   route.get(`/:articleId`, routeParamsValidator, async (req, res) => {
@@ -61,6 +78,13 @@ module.exports = (app, articleService, commentsService) => {
     return res.status(HttpCode.OK).json(comments);
   });
 
+  route.delete(`/:articleId/comments/:commentId`, [routeParamsValidator, commentExists(articleService, commentsService)], async (req, res) => {
+    const {commentId} = req.params;
+    const deletedComment = await commentsService.drop(commentId);
+
+    return res.status(HttpCode.OK).json(deletedComment);
+  });
+
   route.get(`/:articleId/comments/:commentId`, [routeParamsValidator, articleExists(articleService)], async (req, res) => {
     const {articleId, commentId} = req.params;
     const comment = await commentsService.findOne(articleId, commentId);
@@ -73,13 +97,5 @@ module.exports = (app, articleService, commentsService) => {
     const comment = await commentsService.create(articleId, req.body);
 
     return res.status(HttpCode.CREATED).json(comment);
-  });
-
-  route.delete(`/:articleId/comments/:commentId`, [routeParamsValidator, articleExists(articleService), commentExists(articleService, commentsService)], async (req, res) => {
-    const {commentId} = req.params;
-
-    const deletedComment = await commentsService.drop(commentId);
-
-    return res.status(HttpCode.OK).json(deletedComment);
   });
 };

@@ -1,0 +1,16 @@
+header.header
+  a.button.button--colored.header__button-new(href=`/articles/add`) Новая запись
+  .header__dropdown
+    a.button.button--burger.header__burger(href='#') Открыть меню
+    ul.navigation.header__navigation
+      li.navigation__item
+        a(href='/my') Мои публикации
+      li.navigation__item
+        a(href='/my/categories') Категории
+      li.navigation__item
+        a(href='/my/comments') Комментарии
+      li.navigation__item
+        a(href=`/articles/edit/${article.id}`) Редактировать запись
+      li.navigation__item
+        a(href='/logout') Выйти
+

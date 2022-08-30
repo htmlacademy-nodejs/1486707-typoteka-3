@@ -1,9 +1,27 @@
 extends layout.pug
 
 block header-content
-    include partials/header-components/header-dropdown.pug
+    include partials/header-main
 
-block main-content 
+block main-content
+    -
+      const TypeFormatDate = {
+        ARTICLE: 'article',
+        COMMENT: 'comment'
+      };
+      const formatDate = (type, dateString) => {
+        const date = new Date(dateString);
+        let options;
+        switch (type) {
+          case TypeFormatDate.ARTICLE:
+            options = {day: '2-digit', month: '2-digit', year: 'numeric'};
+            break;
+          case TypeFormatDate.COMMENT:
+            options = {day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'};
+            break;
+        }
+        return date.toLocaleString('ru-RU', options);
+      }
     main.main-page.main-page--padding
         section.main-page__publication.publication
             h1.publication__title Комментарии
@@ -12,30 +30,30 @@ block main-content
                     if (index !== (comments.length - 1))
                         li.publication__list-item
                             .publication__header
-                                if (comments.avatar)
-                                    img.publication__list-image(src=`./img/${comments.avatar}` width='20' height='20' alt=comments.avatar)
+                                if (comment.users.avatar)
+                                    img.publication__list-image(src=`/img/${comment.users.avatar}` width='20' height='20' alt=comment.users.name)
                                 else
-                                    img.publication__list-image(src='/img/avatar-small-2.png' width='20' height='20' alt='Аватар пользователя')
-                                b.publication__list-name #{comment.author}
-                                time.publication__item-time(datetime=comment.createdDate) #{comment.createdDate}
-                            a.publication__item-text(href='#')
-                                | #{comment.title}
+                                    img.publication__list-image(src='/img/icons/smile.svg' width='20' height='20' alt='Аватар пользователя')
+                                b.publication__list-name #{`${comment.users.name} ${comment.users.surname}`}
+                                time.publication__item-time(datetime=formatDate(TypeFormatDate.COMMENT, comment.createdAt)) #{formatDate(TypeFormatDate.COMMENT, comment.createdAt)}
+                            a.publication__item-text(href=`/articles/${comment.articleId}`)
+                                | #{comment.articles.title}
                             p.publication__text-strong
                                 | #{comment.text}
-                            button.publication__button.button.button--close-item(type='button')
+                            a.publication__button.button.button--close-item(href=`/my/comments/${comment.articleId}/${comment.id}`)
                                 span.visually-hidden Закрыть строку списка
-                    else    
+                    else
                         li.publication__list-item.publication__list-item--last
                             .publication__header
-                                if (comments.avatar)
-                                    img.publication__list-image(src=`./img/${comments.avatar}` width='20' height='20' alt=comments.avatar)
+                                if (comment.users.avatar)
+                                    img.publication__list-image(src=`/img/${comment.users.avatar}` width='20' height='20' alt=comment.users.avatar)
                                 else
-                                    img.publication__list-image(src='/img/avatar-small-2.png' width='20' height='20' alt='Аватар пользователя')
+                                    img.publication__list-image(src='/img/icons/smile.svg' width='20' height='20' alt='Аватар пользователя')
                                 b.publication__list-name #{comment.author}
-                                time.publication__item-time(datetime=comment.createdDate) #{comment.createdDate}
-                            a.publication__item-text(href='#')
-                                | #{comment.title}
+                                time.publication__item-time(datetime=formatDate(TypeFormatDate.COMMENT, comment.createdAt)) #{formatDate(TypeFormatDate.COMMENT, comment.createdAt)}
+                            a.publication__item-text(href=`/articles/${comment.articleId}`)
+                                | #{comment.articles.title}
                             p.publication__text-strong
                                 | #{comment.text}
-                            button.publication__button.button.button--close-item(type='button')
+                            a.publication__button.button.button--close-item(href=`/my/comments/${comment.id}`)
                                 span.visually-hidden Закрыть строку списка

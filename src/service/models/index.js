@@ -16,7 +16,7 @@ const define = (sequelize) => {
   const User = defineUsers(sequelize);
 
   Article.hasMany(Comment, {as: Aliase.COMMENTS, foreignKey: `articleId`, onDelete: `cascade`});
-  Comment.belongsTo(Article, {foreignKey: `artilceId`});
+  Comment.belongsTo(Article, {as: Aliase.ARTICLES, foreignKey: `articleId`});
 
   Article.belongsToMany(Category, {through: ArticlesCategories, as: Aliase.CATEGORIES});
   Category.belongsToMany(Article, {through: ArticlesCategories, as: Aliase.ARTICLES});

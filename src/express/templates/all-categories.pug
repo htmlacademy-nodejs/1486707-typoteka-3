@@ -1,31 +1,34 @@
 extends layout.pug
 
 block header-content
-    include partials/header-components/header-dropdown.pug
-
-block main-content 
+    if (user && user.id === 1)
+        include partials/header-author
+    else if (user && !user.id === 1)
+        include partials/header-main
+    else
+      include partials/header-registration
+block main-content
     main.main-page.main-page--padding
         section.main-page__category.category
             h1.category__title Категории
             .category__add-form
-                form(action='#' method='POST')
+                form(action='/my/categories/' method='POST')
                     input#add-form-add-category(type='text' name='add-category' placeholder='Новая категория')
                     label(for='add-form-add-category')
                         span.visually-hidden Добавить категорию
                     button.category__button.button.button--category(type='submit') Добавить
+                if (validationMessages)
+                    .form__validation-error
+                      p.form__error-message При регистрации произошли ошибки:
+                      ul.form__errors
+                        each message in validationMessages
+                          li.form__error #{message}
             ul.category__list
                 each category in categories
                     li.category__list-item
-                        form(action='#' method='POST')
-                            input#category.id(type='text' name=`${category.name}` value=`${category.name}`)
-                            label(for=`${category.id}`)
+                        form(action=`/my/categories/${category.id}` method='POST')
+                            input(id=category.id type='text' name='category-name' value=category.name)
+                            label(for=category.id)
                                 span.visually-hidden Редактировать категорию
                             button.category__button.button.button--category(type='submit') Сохранить
-                            button.category__button.button.button--category(type='button') Удалить
-                    li.category__list-item
-                        form(action='#' method='POST')
-                            input#modify-form-category-2(type='text' name='category-2' value='Путешествия')
-                            label(for='modify-form-category-2')
-                                span.visually-hidden Редактировать категорию
-                            button.category__button.button.button--category(type='submit') Сохранить
-                            button.category__button.button.button--category(type='button') Удалить
+                            a.category__button.button.button--category(href=`/my/categories/${category.id}`) Удалить

@@ -1,9 +1,14 @@
 extends layout.pug
 
 block header-content
-    include partials/header-components/header-dropdown.pug
+    if (user && user.id === 1)
+      include partials/header-author
+    else if (user && !user.id === 1)
+      include partials/header-main
+    else
+      include partials/header-registration
 
-block main-content 
+block main-content
     main
         section.search-page
             .search-page__wrapper
@@ -13,9 +18,10 @@ block main-content
                         label
                             input(type='text' name='query' placeholder='Что ищем?')
                         button.search__button.button.button--transparent(type='submit') Найти
-                    each result in results
-                        .search__result
-                            time.search__date(datetime=result.createDate) #{result.createDate}
-                            a.search__link #{result.title}
-
-
+                    if (results.length)
+                        each result in results
+                            .search__result
+                                time.search__date(datetime=result.createdAt) #{result.createdAt}
+                                a.search__link #{result.title}
+                    else
+                        h3 Ничего не нашлось

@@ -1,19 +1,44 @@
 'use strict';
 
+const Aliase = require(`../models/aliase`);
+
 class CommentsService {
   constructor(sequelize) {
     this._Comment = sequelize.models.Comment;
+    this._User = sequelize.models.User;
+    this._Article = sequelize.models.Article;
   }
 
   async findAll(articleId) {
     return await this._Comment.findAll({
+      include: [
+        {
+          model: this._User,
+          as: Aliase.USERS,
+          attributes: {
+            exclude: [`passwordHash`]
+          }
+        }
+      ],
+      order: [
+        [`createdAt`, `DESC`]
+      ],
       where: {articleId},
-      raw: true
+      raw: false
     });
   }
 
   async findOne(articleId, id) {
     return await this._Comment.findOne({
+      include: [
+        {
+          model: this._User,
+          as: Aliase.USERS,
+          attributes: {
+            exclude: [`passwordHash`]
+          }
+        }
+      ],
       where: {
         id,
         articleId
@@ -34,6 +59,33 @@ class CommentsService {
       where: {id}
     });
     return !!deletedRows;
+  }
+
+  async findLimit({limit}) {
+    const options = {
+      include: [
+        {
+          model: this._User,
+          as: Aliase.USERS,
+          attributes: {
+            exclude: [`passwordHash`]
+          }
+        },
+        {
+          model: this._Article,
+          as: Aliase.ARTICLES,
+        }
+      ],
+      order: [
+        [`createdAt`, `DESC`]
+      ]
+    };
+
+    if (limit) {
+      options.limit = limit;
+    }
+
+    return await this._Comment.findAll(options);
   }
 }
 

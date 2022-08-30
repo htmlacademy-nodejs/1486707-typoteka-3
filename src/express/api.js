@@ -20,29 +20,34 @@ class API {
     return response.data;
   }
 
-  getArticles(offset, limit, userId) {
-    return this._load(`/articles`, {params: {offset, limit, userId}});
+  getArticles({offset, limit, commentedLimit, commentsLimit, userId}) {
+    return this._load(`/articles`, {params: {offset, limit, commentedLimit, commentsLimit, userId}});
   }
 
   getArticle(id, comments, userId) {
     return this._load(`/articles/${id}`, {params: {comments, userId}});
   }
 
-  async getAllComments() {
-    const articles = await this._load(`/articles`);
-
-    const commentsData = articles.reduce((comments, article) => {
-      return [...comments, ...article.comments];
-    }, []);
-    return commentsData;
-  }
-
   getComments(id) {
     return this._load(`/articles/${id}/comments`);
   }
 
-  getCategories() {
-    return this._load(`/categories`);
+  getAllComments() {
+    return this._load(`/articles/comments`);
+  }
+
+  deleteComment(articleId, commentId) {
+    return this._load(`/articles/${articleId}/comments/${commentId}`, {
+      method: HttpMethod.DELETE
+    });
+  }
+
+  getCategory({categoryId, limit, offset}) {
+    return this._load(`/categories/${categoryId}`, {params: {limit, offset}});
+  }
+
+  getCategories(withCount) {
+    return this._load(`/categories`, {params: {withCount}});
   }
 
   search(query) {
@@ -60,6 +65,12 @@ class API {
     return this._load(`/articles/${id}`, {
       method: HttpMethod.PUT,
       data
+    });
+  }
+
+  deleteArticle(id) {
+    return this._load(`/articles/${id}`, {
+      method: HttpMethod.DELETE,
     });
   }
 
@@ -81,6 +92,26 @@ class API {
     return this._load(`/user/auth`, {
       method: HttpMethod.POST,
       data: {email, password}
+    });
+  }
+
+  createCategory(data) {
+    return this._load(`/categories`, {
+      method: HttpMethod.POST,
+      data
+    });
+  }
+
+  updateCategory(id, data) {
+    return this._load(`/categories/${id}`, {
+      method: HttpMethod.PUT,
+      data
+    });
+  }
+
+  deleteCategory(id) {
+    return this._load(`/categories/${id}`, {
+      method: HttpMethod.DELETE,
     });
   }
 }

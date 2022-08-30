@@ -1,9 +1,32 @@
 extends layout.pug
 
 block header-content
-    include partials/header-components/header-dropdown.pug
+    if (user && user.id === 1)
+      include partials/header-author
+    else if (user && !user.id === 1)
+      include partials/header-main
+    else
+      include partials/header-registration
 
-block main-content 
+block main-content
+    -
+      const TypeFormatDate = {
+        ARTICLE: 'article',
+        COMMENT: 'comment'
+      };
+      const formatDate = (type, dateString) => {
+        const date = new Date(dateString);
+        let options;
+        switch (type) {
+          case TypeFormatDate.ARTICLE:
+            options = {day: '2-digit', month: '2-digit', year: 'numeric'};
+            break;
+          case TypeFormatDate.COMMENT:
+            options = {day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'};
+            break;
+        }
+        return date.toLocaleString('ru-RU', options);
+      }
     main.main-page.main-page--padding
         section.main-page__notes.notes
             h1.notes__title Мои записи
@@ -11,14 +34,14 @@ block main-content
                 each article, index in articles
                     if (index !== (articles.length - 1))
                         li.notes__list-item
-                            time.notes__item-time(datetime=article.createdDate) #{article.createdDate}
-                            a.notes__item-text(href='#') #{article.announce}
-                            button.notes__button.button.button--close-item(type='button')
+                            time.notes__item-time(datetime=formatDate(TypeFormatDate.COMMENT, article.createdAt)) #{formatDate(TypeFormatDate.COMMENT, article.createdAt)}
+                            a.notes__item-text(href=`/articles/${article.id}`) #{article.announce}
+                            a.notes__button.button.button--close-item(href=`/my/articles/delete/${article.id}`)
                                 span.visually-hidden Закрыть строку списка
                     else
                         li.notes__list-item.notes__list-item--last
-                            time.notes__item-time(datetime=article.createdDate) #{article.createdDate}
-                            a.notes__item-text(href='#') #{article.announce}
-                            button.notes__button.button.button--close-item(type='button')
+                            time.notes__item-time(datetime=formatDate(TypeFormatDate.COMMENT, article.createdAt)) #{formatDate(TypeFormatDate.COMMENT, article.createdAt)}
+                            a.notes__item-text(href=`/articles/${article.id}`) #{article.announce}
+                            a.notes__button.button.button--close-item(href=`/my/articles/delete/${article.id}`)
                                 span.visually-hidden Закрыть строку списка
-                    
+

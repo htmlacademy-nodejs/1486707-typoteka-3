@@ -26,11 +26,6 @@ link(rel='stylesheet' href='/css/style.min.css')
       padding: 10px;
     }
 
-  mixin insertErrorMessage(messages)
-     if (messages)
-        each message in messages
-          .server-error= message
-
   mixin pagination (page, totalPages, width, prefix)
     -
       let start = page - width;
@@ -50,15 +45,21 @@ link(rel='stylesheet' href='/css/style.min.css')
 
     .preview__toggle-wrapper
       ul.preview__pagination.pagination
-        if (start > 1)
+        if (page > 1)
           li
-            a.pagination__button.button.button--backwards.button--disabled(href=`${prefix}page=${page - 1}` aria-label='Страница назад') Назад
+            a.pagination__button.button.button--backwards(href=`${prefix}page=${page - 1}` aria-label='Страница назад') Назад
+        else
+          li
+            a.pagination__button.button.button--backwards.button--disabled(href=`#` aria-label='Страница назад') Назад
         while (i++ < end)
           li.pagination__item(class={'pagination__item--active': i === page})
             a(href=`${prefix}page=${i}`)= i
-        if (end < totalPages)
+        if (page < totalPages)
           li
             a.pagination__button.button.button--forward(href=`${prefix}page=${page + 1}` aria-label='Страница вперед') Вперед
+        else
+          li
+            a.pagination__button.button.button--forward.button--disabled(href=`#` aria-label='Страница вперед') Вперед
 
   include partials/header.pug
 

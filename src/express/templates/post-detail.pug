@@ -1,9 +1,32 @@
 extends layout.pug
 
 block header-content
-    include partials/header-components/header-user.pug
+    if (user && user.id === 1)
+      include partials/header-author-edit
+    else if (user && !user.id === 1)
+      include partials/header-main
+    else
+      include partials/header-registration
 
 block main-content
+    -
+      const TypeFormatDate = {
+        ARTICLE: 'article',
+        COMMENT: 'comment'
+      };
+      const formatDate = (type, dateString) => {
+        const date = new Date(dateString);
+        let options;
+        switch (type) {
+          case TypeFormatDate.ARTICLE:
+            options = {day: '2-digit', month: '2-digit', year: 'numeric'};
+            break;
+          case TypeFormatDate.COMMENT:
+            options = {day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'};
+            break;
+        }
+        return date.toLocaleString('ru-RU', options);
+      }
     main
         section.post
             h1.visually-hidden Пост
@@ -12,43 +35,49 @@ block main-content
                 .post__wrapper
                     .post__head
                         a.post__backwards.button.button--backwards(href='#') Назад
-                        time.post__date(datetime='2019-03-21T20:33') #{article.createDate}
+                        time.post__date(datetime=formatDate(TypeFormatDate.ARTICLE, article.createdAt)) #{formatDate(TypeFormatDate.ARTICLE, article.createdAt)}
                         h2.post__title.title.title--main #{article.title}
                         ul.post__themes.themes
-                            each category of article.categories
+                            each category of categories
                                 li.themes__item
-                                    a.themes__item-link(href='#')
+                                    a.themes__item-link(href=`/articles/category/${category.id}`)
                                         | #{category.name}
-                                        sup 88
+                                        sup #{category.count}
                                     button.themes__remove-btn(type='button') Удалить категорию
                     if (article.picture)
                         .post__picture
-                            img(src=`./img/${article.picture}` alt=article.title)
+                            img(src=`/img/${article.picture}` alt=article.title)
                     .post__text
                         h3 #{article.announce}
-                        p #{article.text}
+                        p #{article.articleText}
             .post__wrapper.post__wrapper--comments
                 section.post__comments.comments
                     h2.comments__title.title.title--middle Комментарии
-                    ul.comments__list
-                        each comment of comments
-                            li.comments__comment
+                    if (comments.length)
+                        ul.comments__list
+                            each comment of comments
+                                li.comments__comment
+                                    .comments__avatar.avatar
+                                        img(src=`/img/${comment.users.avatar}` alt='аватар пользователя')
+                                    .comments__text
+                                        .comments__head
+                                            p #{`${comment.users.name} ${comment.users.surname}`} •
+                                            time.comments__date(datetime=formatDate(TypeFormatDate.COMMENT, comment.createdAt)) #{formatDate(TypeFormatDate.COMMENT, comment.createdAt)}
+                                        p.comments__message #{comment.text}
+                    else
+                        h3 Комментарии отсутствуют
+                    if (user)
+                        .comments__footer.comments__footer--user
+                            form(action=`/articles/${article.id}/comments` method='POST')
+                                input(type="hidden" name="_csrf" value=csrfToken)
                                 .comments__avatar.avatar
-                                    img(src='./img/avatar-2.png' alt='аватар пользователя')
-                                .comments__text
-                                    .comments__head
-                                        p #{comment.author} •
-                                        time.comments__date(datetime=comment.createDate) #{comment.createDate}
-                                    p.comments__message #{comment.text}
-                    .comments__footer.comments__footer--user
-                        form(action='#' method='POST')
-                            input(type="hidden" name="_csrf" value=csrfToken)
-                            .comments__avatar.avatar
-                                    img(src='./img/avatar-2.png' alt='аватар пользователя')
-                            label
-                                textarea(rows='1' name='message' placeholder='Присоединиться к обсуждению')
-                            .form__errors
-                              if (validationMessages)
-                                each message in validationMessages
-                                  span.form__error= message
-                            button.comments__button.button.button--colored(type='submit') Опубликовать
+                                        img(src=`/img/${user.avatar}` alt='аватар пользователя')
+                                label
+                                    textarea(rows='1' name='message' placeholder='Присоединиться к обсуждению')
+                                button.comments__button.button.button--colored(type='submit') Опубликовать
+                                if (validationMessages)
+                                    .form__validation-error
+                                        p.form__error-message При отправке комментария произошла ошибка:
+                                        ul.form__errors
+                                            each message in validationMessages
+                                               li.form__error #{message}
