@@ -63,7 +63,6 @@ class CommentsService {
 
   async findLimit({limit}) {
     const options = {
-      limit,
       include: [
         {
           model: this._User,
@@ -81,6 +80,10 @@ class CommentsService {
         [`createdAt`, `DESC`]
       ]
     };
+
+    if (limit) {
+      options.limit = limit;
+    }
 
     return await this._Comment.findAll(options);
   }

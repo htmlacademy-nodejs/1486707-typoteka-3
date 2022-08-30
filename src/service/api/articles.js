@@ -38,7 +38,7 @@ module.exports = (app, articleService, commentsService) => {
   });
 
   route.get(`/comments`, async (req, res) => {
-    const comments = await commentsService.findLimit();
+    const comments = await commentsService.findLimit({limit: null});
 
     return res.status(HttpCode.OK).json(comments);
   });
