@@ -23,7 +23,7 @@ const FILE_TITLES_PATH = `./data/titles.txt`;
 const FILE_CATEGORIES_PATH = `./data/categories.txt`;
 const FILE_COMMENTS_PATH = `./data/comments.txt`;
 
-const logger = getLogger({});
+const logger = getLogger({name: `api`});
 
 const readContent = async (filePath) => {
   try {
