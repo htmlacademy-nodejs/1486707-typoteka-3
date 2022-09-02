@@ -28,3 +28,8 @@ module.exports.HttpMethod = {
   PUT: `PUT`,
   DELETE: `DELETE`
 };
+
+module.exports.Env = {
+  DEVELOPMENT: `development`,
+  PRODUCTION: `production`
+};
